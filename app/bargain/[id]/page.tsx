@@ -3,6 +3,7 @@ import { MapPin } from "lucide-react";
 import Breadcrumb from "@/app/ui/breadcrumb";
 import { Caroussel } from "@/app/ui/caroussel";
 import { Button } from "@/components/ui/button";
+import OwnerPreview from "@/app/ui/owner-preview";
 
 export default async function Bargain({
   params,
@@ -12,8 +13,8 @@ export default async function Bargain({
   const { id } = await params;
 
   const bargain = {
-    id: 1,
-    title: "Loue clic-clac dans le salon",
+    id: parseInt(id),
+    title: "Magnifique canapé lit chez William - Salon",
     city: "Paris",
     neighborhood: "1er arrondissement",
     description:
@@ -31,14 +32,16 @@ export default async function Bargain({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-4 space-y-4">
-        <Breadcrumb id={id} />
+        <Breadcrumb id={bargain.id.toString()} />
         <div className="space-y-4">
           <div className="justify-center flex items-center">
             <Caroussel bargain={bargain} />
           </div>
           <div className="justify-center flex items-center max-w-2xl mx-auto">
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 space-y-4">
               <div className="text-2xl font-bold">{bargain.title}</div>
+              <OwnerPreview />
+
               <div className="text-md text-gray-500">
                 <div className="flex flex-row gap-2 justify-between">
                   <div className="flex flex-row gap-2">

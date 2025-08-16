@@ -13,3 +13,8 @@ export type Bargain = {
   city: string;
   neighborhood: string;
 };
+
+export type StarRatingProps = {
+  value: number;
+  className?: string;
+};
