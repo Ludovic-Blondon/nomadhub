@@ -12,7 +12,14 @@ export type Bargain = {
   images: string[];
   city: string;
   neighborhood: string;
+  rating: number;
   reviews: Review[];
+  author: User;
+};
+
+export type User = {
+  name: string;
+  avatarUrl?: string;
 };
 
 export type StarRatingProps = {
@@ -26,7 +33,7 @@ export type Review = {
   title?: string;
   body: string;
   createdAt: string;
-  author: { name: string; avatarUrl?: string };
+  author: User;
   tags?: string[];
 };
 

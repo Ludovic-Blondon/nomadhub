@@ -2,9 +2,9 @@ import { MapPin } from "lucide-react";
 
 import Breadcrumb from "@/app/ui/breadcrumb";
 import { Caroussel } from "@/app/ui/caroussel";
-import { Button } from "@/components/ui/button";
 import OwnerPreview from "@/app/ui/owner-preview";
 import ReviewsList from "@/app/ui/reviews/reviews-list";
+import { BookingDialog } from "@/app/ui/booking-dialog";
 
 export default async function Bargain({
   params,
@@ -18,6 +18,7 @@ export default async function Bargain({
     title: "Magnifique canapé lit chez William - Salon",
     city: "Paris",
     neighborhood: "1er arrondissement",
+    rating: 4.5,
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque euismod, nisi eu consectetur cursus, enim erat dictum erat, nec dictum enim enim euismod enim. Sed euismod, enim eu consectetur cursus, enim erat dictum erat, nec dictum enim enim euismod enim.",
     price: 20,
@@ -45,6 +46,10 @@ export default async function Bargain({
         author: { name: "Alex Martin" },
       },
     ],
+    author: {
+      name: "John Doe",
+      avatarUrl: "https://github.com/shadcn.png",
+    },
   };
 
   return (
@@ -60,7 +65,7 @@ export default async function Bargain({
           <div className="flex flex-col gap-4 space-y-4">
             <div className="text-2xl font-bold">{bargain.title}</div>
 
-            <OwnerPreview />
+            <OwnerPreview bargain={bargain} />
 
             <div className="text-md text-gray-500">
               <div className="flex flex-row gap-2 justify-between">
@@ -78,9 +83,7 @@ export default async function Bargain({
             </div>
             <div className="text-sm text-gray-500">{bargain.description}</div>
             <div className="text-sm text-gray-500">
-              <Button className="w-full cursor-pointer">
-                Reservé sur le site
-              </Button>
+              <BookingDialog bargain={bargain} />
             </div>
           </div>
         </div>

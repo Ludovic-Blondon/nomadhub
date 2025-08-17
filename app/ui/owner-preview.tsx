@@ -1,21 +1,24 @@
 import { StarRating } from "./star-rating";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Bargain } from "@/types";
 
-export default function OwnerPreview() {
+export default function OwnerPreview({ bargain }: { bargain: Bargain }) {
   return (
     <div className="flex justify-between flex-row gap-2">
       <div className="flex flex-row gap-2">
         <Avatar>
-          <AvatarImage src="https://github.com/shadcn.png" />
+          <AvatarImage src={bargain.author.avatarUrl} />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
 
-        <div className="text-sm flex items-center text-gray-500">John Doe</div>
+        <div className="text-sm flex items-center text-gray-500">
+          {bargain.author.name}
+        </div>
       </div>
 
       <div>
-        <StarRating value={4.5} />
+        <StarRating value={bargain.rating} />
       </div>
     </div>
   );
