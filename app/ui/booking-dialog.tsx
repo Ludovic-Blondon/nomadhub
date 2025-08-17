@@ -61,7 +61,8 @@ export function BookingDialog({ bargain }: BookingDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const isSmUp = useMediaQuery("(min-width: 640px)");
-  const monthsToShow = isSmUp ? 2 : 1;
+  const isLgUp = useMediaQuery("(min-width: 1024px)");
+  const monthsToShow = isSmUp ? (isLgUp ? 3 : 2) : 1;
 
   const today = new Date();
   const startOfToday = new Date(
@@ -118,8 +119,8 @@ export function BookingDialog({ bargain }: BookingDialogProps) {
         <Button className="w-full cursor-pointer">Réserver sur le site</Button>
       </DialogTrigger>
 
-      <DialogContent className="w-full p-0 sm:p-6 max-w-[100vw] sm:max-w-[820px] max-h-[100svh] sm:rounded-xl rounded-t-2xl overflow-hidden">
-        <div className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-4 sm:rounded-t-xl">
+      <DialogContent className="w-full p-0 max-w-[100vw] sm:max-w-[900px] lg:max-w-[1000px] h-[100svh] sm:h-[90vh] lg:h-[85vh] sm:rounded-xl rounded-t-2xl flex flex-col overflow-hidden">
+        <div className="flex-shrink-0 border-b bg-background p-4 sm:p-6 sm:pb-4">
           <DialogHeader className="space-y-1">
             <DialogTitle className="text-base sm:text-xl">
               {bargain.title} à {bargain.city}
@@ -133,7 +134,7 @@ export function BookingDialog({ bargain }: BookingDialogProps) {
           </DialogHeader>
         </div>
 
-        <div className="w-full overflow-y-auto px-4 pb-24 sm:pb-6 pt-4">
+        <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 min-h-0">
           {bookingState === "selecting" && (
             <>
               {error && (
@@ -143,7 +144,7 @@ export function BookingDialog({ bargain }: BookingDialogProps) {
               )}
 
               <Calendar
-                className="rounded-lg border shadow-sm w-full"
+                className="rounded-lg border shadow-sm w-full mx-auto sm:max-w-none"
                 defaultMonth={dateRange?.from || startOfToday}
                 disabled={disabledDays}
                 mode="range"
@@ -338,7 +339,7 @@ export function BookingDialog({ bargain }: BookingDialogProps) {
           )}
         </div>
 
-        <div className="sticky bottom-0 z-10 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-3 sm:p-4">
+        <div className="flex-shrink-0 border-t bg-background p-3 sm:p-4 sm:pt-4">
           <DialogFooter className="gap-2 sm:gap-3">
             {bookingState === "selecting" && (
               <div className="w-full grid grid-cols-1 gap-2 items-center sm:flex sm:justify-end">
