@@ -36,9 +36,3 @@ export type Review = {
   author: User;
   tags?: string[];
 };
-
-export type ReviewSummary = {
-  average: number;
-  total: number;
-  counts: Record<1 | 2 | 3 | 4 | 5, number>;
-};
