@@ -6,7 +6,6 @@ import {
   Clock,
   Euro,
   ArrowRight,
-  Filter,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -122,7 +121,7 @@ export default function Booking() {
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       pending: {
-        label: "En attente",
+        label: "En attente de confirmation par l'hôte",
         variant: "secondary" as const,
         className:
           "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100",
@@ -175,10 +174,6 @@ export default function Booking() {
     return Math.ceil(timeDiff / (1000 * 3600 * 24));
   };
 
-  const filterBookingsByStatus = (status: string) => {
-    return bookings.filter((booking) => booking.status === status);
-  };
-
   const activeBookings = bookings.filter((b) => b.status !== "cancelled");
   const pastBookings = bookings.filter((b) => b.status === "cancelled");
 
@@ -194,61 +189,6 @@ export default function Booking() {
             Gérez et suivez vos réservations en cours
           </p>
         </div>
-        <Button className="w-fit" size="sm" variant="outline">
-          <Filter className="w-4 h-4 mr-2" />
-          Filtrer
-        </Button>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <Card className="border-l-4 border-l-amber-500">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  En attente
-                </p>
-                <p className="text-2xl font-bold">
-                  {filterBookingsByStatus("pending").length}
-                </p>
-              </div>
-              <Clock className="w-8 h-8 text-amber-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-l-4 border-l-emerald-500">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  Confirmées
-                </p>
-                <p className="text-2xl font-bold">
-                  {filterBookingsByStatus("confirmed").length}
-                </p>
-              </div>
-              <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center">
-                <div className="w-4 h-4 rounded-full bg-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-l-4 border-l-blue-500">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  Total
-                </p>
-                <p className="text-2xl font-bold">{bookings.length}</p>
-              </div>
-              <Calendar className="w-8 h-8 text-blue-500" />
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Tabs */}
