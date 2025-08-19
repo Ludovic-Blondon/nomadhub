@@ -320,12 +320,12 @@ export default function Booking() {
                             <p className="text-xs text-muted-foreground">
                               {calculateNights(
                                 booking.startDate,
-                                booking.endDate
+                                booking.endDate,
                               )}{" "}
                               nuit
                               {calculateNights(
                                 booking.startDate,
-                                booking.endDate
+                                booking.endDate,
                               ) > 1
                                 ? "s"
                                 : ""}
@@ -341,7 +341,7 @@ export default function Booking() {
                               {booking.bargain.price *
                                 calculateNights(
                                   booking.startDate,
-                                  booking.endDate
+                                  booking.endDate,
                                 )}{" "}
                               €
                             </p>
