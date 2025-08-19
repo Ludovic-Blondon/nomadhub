@@ -6,6 +6,7 @@ import {
   Clock,
   Euro,
   ArrowRight,
+  AlarmClockCheck,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -172,11 +173,7 @@ export default function Booking() {
       case "pending":
         return <Clock className="w-4 h-4 text-amber-600" />;
       case "confirmed":
-        return (
-          <div className="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center">
-            <div className="w-2 h-2 rounded-full bg-white" />
-          </div>
-        );
+        return <AlarmClockCheck className="w-4 h-4 text-green-600" />;
       case "cancelled":
         return <div className="w-4 h-4 text-red-500">✕</div>;
       case "completed":
@@ -320,12 +317,12 @@ export default function Booking() {
                             <p className="text-xs text-muted-foreground">
                               {calculateNights(
                                 booking.startDate,
-                                booking.endDate,
+                                booking.endDate
                               )}{" "}
                               nuit
                               {calculateNights(
                                 booking.startDate,
-                                booking.endDate,
+                                booking.endDate
                               ) > 1
                                 ? "s"
                                 : ""}
@@ -341,7 +338,7 @@ export default function Booking() {
                               {booking.bargain.price *
                                 calculateNights(
                                   booking.startDate,
-                                  booking.endDate,
+                                  booking.endDate
                                 )}{" "}
                               €
                             </p>
