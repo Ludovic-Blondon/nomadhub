@@ -22,8 +22,8 @@ export default function Booking() {
     {
       id: 1,
       status: "pending",
-      startDate: "2025-01-01",
-      endDate: "2025-01-02",
+      startDate: "2025-08-20",
+      endDate: "2025-08-22",
       bargain: {
         id: 1,
         title: "Magnifique canapé lit chez William - Salon",
@@ -62,19 +62,12 @@ export default function Booking() {
           avatarUrl: "https://github.com/shadcn.png",
         },
       },
-      dates: [
-        {
-          start: "2025-01-01",
-          end: "2025-01-02",
-        },
-      ],
     },
-    // Ajout d'exemples supplémentaires pour démonstration
     {
       id: 2,
       status: "confirmed",
-      startDate: "2024-12-15",
-      endDate: "2024-12-17",
+      startDate: "2025-08-28",
+      endDate: "2025-08-30",
       bargain: {
         id: 2,
         title: "Studio cozy au cœur de Montmartre",
@@ -99,6 +92,25 @@ export default function Booking() {
         title: "Appartement moderne près de la gare",
         city: "Lyon",
         neighborhood: "Part-Dieu",
+        rating: 4.2,
+        price: 35,
+        images: ["/images/pexels-chaitaastic-1918291-optimized.jpeg"],
+        author: {
+          name: "Pierre Dubois",
+          avatarUrl: "https://github.com/shadcn.png",
+        },
+      },
+    },
+    {
+      id: 4,
+      status: "completed",
+      startDate: "2024-12-01",
+      endDate: "2024-12-02",
+      bargain: {
+        id: 3,
+        title: "Magnifique canapé lit chez William - Salon",
+        city: "Paris",
+        neighborhood: "1er arrondissement",
         rating: 4.2,
         price: 35,
         images: ["/images/pexels-chaitaastic-1918291-optimized.jpeg"],
@@ -137,6 +149,12 @@ export default function Booking() {
         variant: "destructive" as const,
         className: "bg-red-50 text-red-700 border-red-200 hover:bg-red-100",
       },
+      completed: {
+        label: "Terminée",
+        variant: "default" as const,
+        className:
+          "bg-green-50 text-green-700 border-green-200 hover:bg-green-100",
+      },
     };
 
     const config =
@@ -161,6 +179,8 @@ export default function Booking() {
         );
       case "cancelled":
         return <div className="w-4 h-4 text-red-500">✕</div>;
+      case "completed":
+        return <div className="w-4 h-4 text-green-500">✓</div>;
       default:
         return null;
     }
@@ -174,8 +194,10 @@ export default function Booking() {
     return Math.ceil(timeDiff / (1000 * 3600 * 24));
   };
 
-  const activeBookings = bookings.filter((b) => b.status !== "cancelled");
-  const pastBookings = bookings.filter((b) => b.status === "cancelled");
+  const actives = ["pending", "confirmed"];
+  const past = ["cancelled", "completed"];
+  const activeBookings = bookings.filter((b) => actives.includes(b.status));
+  const pastBookings = bookings.filter((b) => past.includes(b.status));
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -298,12 +320,12 @@ export default function Booking() {
                             <p className="text-xs text-muted-foreground">
                               {calculateNights(
                                 booking.startDate,
-                                booking.endDate,
+                                booking.endDate
                               )}{" "}
                               nuit
                               {calculateNights(
                                 booking.startDate,
-                                booking.endDate,
+                                booking.endDate
                               ) > 1
                                 ? "s"
                                 : ""}
@@ -319,7 +341,7 @@ export default function Booking() {
                               {booking.bargain.price *
                                 calculateNights(
                                   booking.startDate,
-                                  booking.endDate,
+                                  booking.endDate
                                 )}{" "}
                               €
                             </p>
