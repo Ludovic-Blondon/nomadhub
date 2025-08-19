@@ -13,7 +13,7 @@ export type Bargain = {
   city: string;
   neighborhood: string;
   rating: number;
-  reviews: Review[];
+  reviews?: Review[];
   author: User;
 };
 
@@ -35,4 +35,14 @@ export type Review = {
   createdAt: string;
   author: User;
   tags?: string[];
+};
+
+export type BookingStatus = "pending" | "confirmed" | "cancelled" | "completed";
+
+export type Booking = {
+  id: number;
+  status: BookingStatus;
+  startDate: string; // YYYY-MM-DD
+  endDate: string; // YYYY-MM-DD
+  bargain: Bargain;
 };
