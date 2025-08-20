@@ -47,41 +47,41 @@ export default function CancelBookingDialog({ booking }: { booking: Booking }) {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="w-full p-0 max-w-[100vw] sm:max-w-[720px] h-[100svh] sm:h-auto sm:min-h-[0] sm:rounded-xl rounded-t-2xl overflow-hidden">
-        {/* Header */}
-        <div className="border-b p-4 sm:p-6">
-          <DialogHeader className="space-y-1 p-0">
-            <DialogTitle className="text-base sm:text-lg">
-              Confirmer l&apos;annulation
-            </DialogTitle>
-          </DialogHeader>
-        </div>
+      <DialogContent className="w-full p-0 max-w-[100vw] sm:max-w-md h-[100svh] sm:h-auto rounded-none sm:rounded-lg overflow-hidden">
+        {/* Header simplifié */}
+        <DialogHeader className="px-6 py-4 border-b border-border/50">
+          <DialogTitle className="text-lg font-medium">
+            Annuler la réservation
+          </DialogTitle>
+        </DialogHeader>
 
-        {/* Body */}
-        <div className="px-4 sm:px-6 py-4">
+        {/* Corps du dialogue */}
+        <div className="px-6 py-6">
           {bookingState === "pending" && (
-            <div className="space-y-4 text-sm">
-              <div className="grid gap-2">
-                <Row
+            <div className="space-y-6">
+              {/* Informations de réservation */}
+              <div className="space-y-3">
+                <InfoRow
                   label="Période"
                   value={`${booking.startDate} → ${booking.endDate}`}
                 />
-                <Row label="Offre" value={booking.bargain.title} />
-                <Row label="Ville" value={booking.bargain.city} />
+                <InfoRow label="Offre" value={booking.bargain.title} />
+                <InfoRow label="Ville" value={booking.bargain.city} />
               </div>
-              <p className="text-muted-foreground">
-                Si vous continuez, la réservation passera à l&apos;état &quot;
-                annulée&quot; et ne pourra pas être rétablie.
-              </p>
+
+              {/* Message d'avertissement */}
+              <div className="p-4 bg-destructive/5 border border-destructive/20 rounded-md">
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Cette action est irréversible. La réservation sera
+                  définitivement annulée.
+                </p>
+              </div>
             </div>
           )}
 
           {bookingState === "loading" && (
-            <div aria-live="polite" className="flex items-center gap-3 py-8">
-              <div
-                aria-hidden="true"
-                className="h-5 w-5 rounded-full border border-foreground/60 border-t-transparent animate-spin"
-              />
+            <div className="flex flex-col items-center justify-center py-12 space-y-4">
+              <div className="h-8 w-8 rounded-full border-2 border-muted border-t-foreground animate-spin" />
               <p className="text-sm text-muted-foreground">
                 Annulation en cours…
               </p>
@@ -89,52 +89,55 @@ export default function CancelBookingDialog({ booking }: { booking: Booking }) {
           )}
 
           {bookingState === "cancelled" && (
-            <div className="py-8">
-              <p className="text-sm">Votre réservation a été annulée.</p>
+            <div className="flex flex-col items-center justify-center py-12 space-y-4">
+              <div className="h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+                <svg
+                  className="h-6 w-6 text-green-600 dark:text-green-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M5 13l4 4L19 7"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                  />
+                </svg>
+              </div>
+              <p className="text-sm font-medium">Réservation annulée</p>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="border-t p-3 sm:p-4">
-          <DialogFooter className="gap-2 sm:gap-3">
+        <div className="px-6 py-4 border-t border-border/50 bg-muted/20">
+          <DialogFooter className="space-y-2 sm:space-y-0">
             {bookingState === "pending" && (
-              <div className="w-full grid grid-cols-1 gap-2 sm:flex sm:justify-end">
+              <>
                 <DialogClose asChild>
                   <Button className="w-full sm:w-auto" variant="outline">
-                    Retour
+                    Annuler
                   </Button>
                 </DialogClose>
                 <Button
-                  aria-label="Confirmer l'annulation"
                   className="w-full sm:w-auto"
-                  type="button"
                   variant="destructive"
                   onClick={handleSubmit}
                 >
-                  Confirmer l&apos;annulation
+                  Confirmer
                 </Button>
-              </div>
+              </>
             )}
 
-            {bookingState === "loading" && (
-              <div className="w-full grid grid-cols-1 gap-2 sm:flex sm:justify-end">
-                <Button disabled className="w-full sm:w-auto" variant="outline">
-                  En cours…
-                </Button>
-              </div>
-            )}
-
-            {bookingState === "cancelled" && (
-              <div className="w-full grid grid-cols-1 gap-2 sm:flex sm:justify-end">
-                <Button
-                  aria-label="Fermer"
-                  className="w-full sm:w-auto"
-                  onClick={handleClose}
-                >
-                  Fermer
-                </Button>
-              </div>
+            {bookingState !== "pending" && (
+              <Button
+                className="w-full sm:w-auto"
+                disabled={bookingState === "loading"}
+                onClick={handleClose}
+              >
+                Fermer
+              </Button>
             )}
           </DialogFooter>
         </div>
@@ -143,11 +146,15 @@ export default function CancelBookingDialog({ booking }: { booking: Booking }) {
   );
 }
 
-function Row({ label, value }: { label: string; value?: string | number }) {
+function InfoRow({ label, value }: { label: string; value?: string | number }) {
   return (
-    <div className="flex items-center justify-between gap-4">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="truncate font-medium text-right">{value ?? "—"}</span>
+    <div className="flex justify-between items-start gap-4 py-2">
+      <span className="text-sm text-muted-foreground font-medium min-w-0 flex-shrink-0">
+        {label}
+      </span>
+      <span className="text-sm font-medium text-right min-w-0 flex-1">
+        {value ?? "—"}
+      </span>
     </div>
   );
 }
