@@ -2,7 +2,7 @@
 
 import type { Booking } from "@/types";
 
-import React, { useEffect, useMemo } from "react";
+import React, { Suspense, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Calendar, Clock, Home, User } from "lucide-react";
 
@@ -290,7 +290,7 @@ function useRoleTabMemory(
 
 // --- Page -----------------------------------------------------------------
 
-export default function ReservationsPage() {
+function ReservationsPage() {
   const [role, setRole] = useUrlRole();
 
   // Listes mémoïsées
@@ -542,5 +542,27 @@ function EmptyState({
         </Button>
       </div>
     </Card>
+  );
+}
+
+// Wrapper requis par Next.js lorsque la page (Client) utilise useSearchParams
+export default function Page() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <ReservationsPage />
+    </Suspense>
+  );
+}
+
+function PageSkeleton() {
+  return (
+    <div className="container mx-auto max-w-6xl px-4 py-8">
+      <div className="mb-8 h-8 w-48 rounded-lg bg-muted/40" />
+      <div className="mb-4 h-10 w-72 rounded-xl border border-border/60 bg-card/60" />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="h-48 rounded-2xl border border-border/60 bg-card/60" />
+        <div className="h-48 rounded-2xl border border-border/60 bg-card/60" />
+      </div>
+    </div>
   );
 }
