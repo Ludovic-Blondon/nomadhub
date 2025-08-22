@@ -84,7 +84,7 @@ export const Navbar = () => {
                 aria-current={isActive(item.href) ? "page" : undefined}
                 className={clsx(
                   linkStyles({ color: "foreground" }),
-                  "data-[active=true]:text-default-500 data-[active=true]:font-medium"
+                  "data-[active=true]:text-default-500 data-[active=true]:font-medium",
                 )}
                 color="foreground"
                 data-active={isActive(item.href)}
