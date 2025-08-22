@@ -5,58 +5,46 @@ export const siteConfig = {
   description: "Make beautiful websites regardless of your design experience.",
   navItems: [
     {
-      label: "Home",
+      label: "Accueil",
       href: "/",
     },
     {
-      label: "Docs",
-      href: "/docs",
+      label: "Réservation",
+      href: "/booking",
     },
     {
-      label: "Pricing",
-      href: "/pricing",
+      label: "Comment ça marche ?",
+      href: "/how-it-works",
     },
     {
-      label: "Blog",
-      href: "/blog",
+      label: "Devenir hôte",
+      href: "/become-host",
     },
     {
-      label: "About",
+      label: "A propos",
       href: "/about",
     },
   ],
   navMenuItems: [
     {
-      label: "Profile",
-      href: "/profile",
+      label: "Accueil",
+      href: "/",
     },
     {
-      label: "Dashboard",
-      href: "/dashboard",
+      label: "Réservation",
+      href: "/booking",
     },
     {
-      label: "Projects",
-      href: "/projects",
+      label: "Comment ça marche ?",
+      href: "/how-it-works",
     },
     {
-      label: "Team",
-      href: "/team",
+      label: "Devenir hôte",
+      href: "/become-host",
     },
     {
-      label: "Calendar",
-      href: "/calendar",
-    },
-    {
-      label: "Settings",
-      href: "/settings",
-    },
-    {
-      label: "Help & Feedback",
-      href: "/help-feedback",
-    },
-    {
-      label: "Logout",
-      href: "/logout",
+      label: "A propos",
+      href: "/about",
     },
   ],
   links: {

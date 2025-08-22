@@ -1,0 +1,160 @@
+"use client";
+
+import type { Booking } from "@/types";
+
+import { useState } from "react";
+
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+type CancelBookingState = "pending" | "loading" | "cancelled";
+
+export default function CancelBookingDialog({ booking }: { booking: Booking }) {
+  const [bookingState, setBookingState] =
+    useState<CancelBookingState>("pending");
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleSubmit = () => {
+    setBookingState("loading");
+    // TODO: Call API to cancel booking
+    setTimeout(() => setBookingState("cancelled"), 900);
+  };
+
+  const handleReset = () => setBookingState("pending");
+
+  const handleClose = () => {
+    setIsOpen(false);
+    setTimeout(() => handleReset(), 200);
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button
+          aria-label="Annuler la réservation"
+          className="flex-1"
+          variant="destructive"
+        >
+          Annuler la réservation
+        </Button>
+      </DialogTrigger>
+
+      <DialogContent className="w-full p-0 max-w-[100vw] sm:max-w-md h-[100svh] sm:h-auto rounded-none sm:rounded-lg overflow-hidden">
+        {/* Header simplifié */}
+        <DialogHeader className="px-6 py-4 border-b border-border/50">
+          <DialogTitle className="text-lg font-medium">
+            Annuler la réservation
+          </DialogTitle>
+        </DialogHeader>
+
+        {/* Corps du dialogue */}
+        <div className="px-6 py-6">
+          {bookingState === "pending" && (
+            <div className="space-y-6">
+              {/* Informations de réservation */}
+              <div className="space-y-3">
+                <InfoRow
+                  label="Période"
+                  value={`${booking.startDate} → ${booking.endDate}`}
+                />
+                <InfoRow label="Offre" value={booking.bargain.title} />
+                <InfoRow label="Ville" value={booking.bargain.city} />
+              </div>
+
+              {/* Message d'avertissement */}
+              <div className="p-4 bg-destructive/5 border border-destructive/20 rounded-md">
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Cette action est irréversible. La réservation sera
+                  définitivement annulée.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {bookingState === "loading" && (
+            <div className="flex flex-col items-center justify-center py-12 space-y-4">
+              <div className="h-8 w-8 rounded-full border-2 border-muted border-t-foreground animate-spin" />
+              <p className="text-sm text-muted-foreground">
+                Annulation en cours…
+              </p>
+            </div>
+          )}
+
+          {bookingState === "cancelled" && (
+            <div className="flex flex-col items-center justify-center py-12 space-y-4">
+              <div className="h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+                <svg
+                  className="h-6 w-6 text-green-600 dark:text-green-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M5 13l4 4L19 7"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                  />
+                </svg>
+              </div>
+              <p className="text-sm font-medium">Réservation annulée</p>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-4 border-t border-border/50 bg-muted/20">
+          <DialogFooter className="space-y-2 sm:space-y-0">
+            {bookingState === "pending" && (
+              <>
+                <DialogClose asChild>
+                  <Button className="w-full sm:w-auto" variant="outline">
+                    Annuler
+                  </Button>
+                </DialogClose>
+                <Button
+                  className="w-full sm:w-auto"
+                  variant="destructive"
+                  onClick={handleSubmit}
+                >
+                  Confirmer
+                </Button>
+              </>
+            )}
+
+            {bookingState !== "pending" && (
+              <Button
+                className="w-full sm:w-auto"
+                disabled={bookingState === "loading"}
+                onClick={handleClose}
+              >
+                Fermer
+              </Button>
+            )}
+          </DialogFooter>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function InfoRow({ label, value }: { label: string; value?: string | number }) {
+  return (
+    <div className="flex justify-between items-start gap-4 py-2">
+      <span className="text-sm text-muted-foreground font-medium min-w-0 flex-shrink-0">
+        {label}
+      </span>
+      <span className="text-sm font-medium text-right min-w-0 flex-1">
+        {value ?? "—"}
+      </span>
+    </div>
+  );
+}
