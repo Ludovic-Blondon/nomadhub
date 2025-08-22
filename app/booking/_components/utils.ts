@@ -19,7 +19,7 @@ export const eurFmt = new Intl.NumberFormat("fr-FR", {
 
 export function formatDate(dateString: string) {
   const d = new Date(
-    dateString + (dateString.length === 10 ? "T00:00:00" : "")
+    dateString + (dateString.length === 10 ? "T00:00:00" : ""),
   );
 
   return dateFmtFR.format(d);
