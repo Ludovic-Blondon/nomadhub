@@ -8,28 +8,33 @@ import { Booking } from "@/types";
 
 export function PastBookingCard({ booking }: { booking: Booking }) {
   return (
-    <Card className="opacity-75 hover:opacity-100 transition-opacity">
-      <CardContent className="p-4">
-        <div className="flex items-center gap-4">
-          <div className="relative w-20 h-20 flex-shrink-0">
+    <Card className="border rounded-xl hover:shadow-sm transition p-0">
+      <CardContent className="p-2">
+        <div className="flex items-center gap-3">
+          {/* Image vignette */}
+          <div className="relative w-16 h-16 flex-shrink-0 overflow-hidden rounded-md bg-muted">
             <Image
               fill
               alt={booking.bargain.title}
-              className="object-cover rounded-lg"
-              sizes="80px"
+              className="object-cover"
+              sizes="64px"
               src={booking.bargain.images[0]}
             />
           </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold line-clamp-1">
-              {booking.bargain.title}
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {formatDate(booking.startDate)} - {formatDate(booking.endDate)}
-            </p>
-            <div className="flex items-center gap-2 mt-1">
-              <StatusBadge status={booking.status} />
+          {/* Infos + Status centré verticalement */}
+          <div className="flex-1 min-w-0 flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <h3
+                className="text-sm font-medium truncate"
+                title={booking.bargain.title}
+              >
+                {booking.bargain.title}
+              </h3>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {formatDate(booking.startDate)} – {formatDate(booking.endDate)}
+              </p>
             </div>
+            <StatusBadge status={booking.status} />
           </div>
         </div>
       </CardContent>
