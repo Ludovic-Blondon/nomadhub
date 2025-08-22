@@ -12,18 +12,17 @@ import { HostActiveBookingCard } from "./_components/host-active-booking-card";
 
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 
 /**
- * ✅ What changed vs your original:
- * - Added a top-level role switcher (Guest | Host) controlled by the URL `?role=guest|host`.
- * - Each role keeps its own sub-tabs (Active | Past) and remembers the last chosen tab per role.
- * - State isolation per role to avoid conflicts (separate keys & memoized lists).
- * - Ready to plug API calls: replace mock arrays with server data (React Query/Server Actions).
+ * Page Réservations — classe & minimal (Next.js + shadcn)
+ * - URL source of truth pour le rôle (?role=guest|host)
+ * - Mémoire d'onglet par rôle (localStorage)
+ * - Composants cartes minimalistes réutilisés
+ * - UI cohérente clair/sombre via tokens shadcn
  */
 
-/**
- * Mock data — replace with server data as needed
- */
+// --- Mock data (à remplacer par vos données serveur) ----------------------
 const guestBookings: Booking[] = [
   {
     id: 1,
@@ -63,10 +62,7 @@ const guestBookings: Booking[] = [
           author: { name: "Alex Martin" },
         },
       ],
-      author: {
-        name: "John Doe",
-        avatarUrl: "https://github.com/shadcn.png",
-      },
+      author: { name: "John Doe", avatarUrl: "https://github.com/shadcn.png" },
     },
   },
   {
@@ -155,14 +151,10 @@ const guestBookings: Booking[] = [
   },
 ];
 
-/**
- * For hosts: bookings that belong to listings the current user hosts.
- * Replace with your server data (e.g., GET /me/reservations?role=host).
- */
 const hostBookings: Booking[] = [
   {
     id: 101,
-    status: "pending", // awaiting host action
+    status: "pending",
     startDate: "2025-09-10",
     endDate: "2025-09-12",
     bargain: {
@@ -183,7 +175,7 @@ const hostBookings: Booking[] = [
   },
   {
     id: 102,
-    status: "rejected", // awaiting host action
+    status: "rejected",
     startDate: "2025-09-10",
     endDate: "2025-09-12",
     bargain: {
@@ -202,12 +194,12 @@ const hostBookings: Booking[] = [
     },
   },
   {
-    id: 102,
+    id: 104,
     status: "confirmed",
     startDate: "2025-09-18",
     endDate: "2025-09-20",
     bargain: {
-      id: 43,
+      id: 45,
       title: "T2 design proche Bellecour",
       city: "Lyon",
       neighborhood: "2e arrondissement",
@@ -244,33 +236,31 @@ const hostBookings: Booking[] = [
   },
 ];
 
-// --- Helpers ---------------------------------------------------------------
+// --- Helpers --------------------------------------------------------------
 
 type Role = "guest" | "host";
 
 function useUrlRole(): [Role, (r: Role) => void] {
   const router = useRouter();
   const params = useSearchParams();
-  const roleParam =
-    (params.get("role") as Role) || (undefined as unknown as Role);
+  const roleParam = (params.get("role") as Role) || undefined;
 
-  // fallback to last role from localStorage then to 'guest'
+  // Fallback: localStorage → guest
   const role = (roleParam ||
     (typeof window !== "undefined" &&
       (localStorage.getItem("reservations:lastRole") as Role)) ||
     "guest") as Role;
 
   const setRole = (r: Role) => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined")
       localStorage.setItem("reservations:lastRole", r);
-    }
     const search = new URLSearchParams(params?.toString());
 
     search.set("role", r);
     router.replace(`?${search.toString()}`);
   };
 
-  // Ensure URL reflects chosen role on first mount
+  // Aligne l'URL au premier rendu si manquante
   useEffect(() => {
     const current = params.get("role");
 
@@ -298,12 +288,12 @@ function useRoleTabMemory(
   return [tab, update];
 }
 
-// --- Component -------------------------------------------------------------
+// --- Page -----------------------------------------------------------------
 
 export default function ReservationsPage() {
   const [role, setRole] = useUrlRole();
 
-  // Split lists by role with memoization to avoid recompute & flicker
+  // Listes mémoïsées
   const guestActive = useMemo(
     () =>
       guestBookings.filter(
@@ -313,11 +303,8 @@ export default function ReservationsPage() {
   );
   const guestPast = useMemo(
     () =>
-      guestBookings.filter(
-        (b) =>
-          b.status === "cancelled" ||
-          b.status === "completed" ||
-          b.status === "rejected",
+      guestBookings.filter((b) =>
+        ["cancelled", "completed", "rejected"].includes(b.status),
       ),
     [],
   );
@@ -331,11 +318,8 @@ export default function ReservationsPage() {
   );
   const hostPast = useMemo(
     () =>
-      hostBookings.filter(
-        (b) =>
-          b.status === "cancelled" ||
-          b.status === "completed" ||
-          b.status === "rejected",
+      hostBookings.filter((b) =>
+        ["cancelled", "completed", "rejected"].includes(b.status),
       ),
     [],
   );
@@ -349,7 +333,7 @@ export default function ReservationsPage() {
     hostActive.length > 0 ? "active" : "past";
 
   useEffect(() => {
-    // When role changes, ensure we start on a sensible default if nothing saved
+    // Choix par défaut sensé si pas de mémoire locale
     if (role === "guest" && !localStorage.getItem("reservations:guest:tab"))
       setGuestTab(guestDefault);
     if (role === "host" && !localStorage.getItem("reservations:host:tab"))
@@ -357,35 +341,35 @@ export default function ReservationsPage() {
   }, [role]);
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="container mx-auto max-w-6xl px-4 py-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Réservations</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-3xl font-semibold tracking-tight">
+            Réservations
+          </h1>
+          <p className="mt-1 text-muted-foreground">
             Gérez vos réservations côté voyageur et côté hôte
           </p>
         </div>
       </div>
 
-      {/* Role Tabs (Guest | Host) */}
+      {/* Tabs Rôle */}
       <Tabs
         className="space-y-8"
         value={role}
         onValueChange={(v) => setRole(v as Role)}
       >
-        <TabsList className="grid w-full grid-cols-2 lg:w-[420px]">
+        <TabsList className="grid w-full grid-cols-2 rounded-xl border border-border/60 bg-card/60 backdrop-blur supports-[backdrop-filter]:bg-card/50 lg:w-[420px]">
           <TabsTrigger className="flex items-center gap-2" value="guest">
-            <User className="w-4 h-4" />
-            Voyageur ({guestActive.length})
+            <User className="h-4 w-4" /> Voyageur ({guestActive.length})
           </TabsTrigger>
           <TabsTrigger className="flex items-center gap-2" value="host">
-            <Home className="w-4 h-4" />
-            Hôte ({hostActive.length})
+            <Home className="h-4 w-4" /> Hôte ({hostActive.length})
           </TabsTrigger>
         </TabsList>
 
-        {/* Guest content */}
+        {/* Guest */}
         <TabsContent className="space-y-6" value="guest">
           <RoleSection
             activeCount={guestActive.length}
@@ -400,7 +384,7 @@ export default function ReservationsPage() {
           />
         </TabsContent>
 
-        {/* Host content */}
+        {/* Host */}
         <TabsContent className="space-y-6" value="host">
           <RoleSection
             activeCount={hostActive.length}
@@ -408,7 +392,6 @@ export default function ReservationsPage() {
             defaultTab={hostDefault}
             pastCount={hostPast.length}
             pastList={hostPast}
-            // role="host"
             subtitle="Acceptez, refusez et suivez les séjours"
             tab={hostTab}
             title="Réservations de mes annonces (hôte)"
@@ -420,7 +403,7 @@ export default function ReservationsPage() {
   );
 }
 
-// --- Extracted sub-component for clarity ----------------------------------
+// --- Sous-composants ------------------------------------------------------
 
 type RoleSectionProps = {
   title: string;
@@ -432,7 +415,7 @@ type RoleSectionProps = {
   onTabChange: (v: "active" | "past") => void;
   activeList: Booking[];
   pastList: Booking[];
-  role?: Role; // used to tweak empty states & copy
+  role?: Role;
 };
 
 function RoleSection({
@@ -452,24 +435,22 @@ function RoleSection({
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
-        <p className="text-muted-foreground mt-1">{subtitle}</p>
+        <p className="mt-1 text-muted-foreground">{subtitle}</p>
       </div>
 
-      {/* Status tabs (Active | Past) scoped to the current role */}
+      {/* Onglets statut */}
       <Tabs
         className="space-y-6"
         defaultValue={defaultTab}
         value={tab}
         onValueChange={(v) => onTabChange(v as "active" | "past")}
       >
-        <TabsList className="grid w-full grid-cols-2 lg:w-[420px]">
+        <TabsList className="grid w-full grid-cols-2 rounded-xl border border-border/60 bg-card/60 backdrop-blur supports-[backdrop-filter]:bg-card/50 lg:w-[420px]">
           <TabsTrigger className="flex items-center gap-2" value="active">
-            <Clock className="w-4 h-4" />
-            Réservations actives ({activeCount})
+            <Clock className="h-4 w-4" /> Réservations actives ({activeCount})
           </TabsTrigger>
           <TabsTrigger className="flex items-center gap-2" value="past">
-            <Calendar className="w-4 h-4" />
-            Historique ({pastCount})
+            <Calendar className="h-4 w-4" /> Historique ({pastCount})
           </TabsTrigger>
         </TabsList>
 
@@ -482,7 +463,7 @@ function RoleSection({
                   : "Vos réservations en cours apparaîtront ici."
               }
               icon={
-                <Calendar className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                <Calendar className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
               }
               title={
                 role === "host"
@@ -516,7 +497,7 @@ function RoleSection({
                   : "Vos réservations passées apparaîtront ici."
               }
               icon={
-                <Calendar className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                <Calendar className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
               }
               title={
                 role === "host"
@@ -548,10 +529,18 @@ function EmptyState({
   description: string;
 }) {
   return (
-    <Card className="p-8 text-center">
+    <Card className="rounded-2xl border border-border/60 bg-card/60 p-8 text-center backdrop-blur supports-[backdrop-filter]:bg-card/50">
       {icon}
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
+      <h3 className="mb-2 text-lg font-semibold">{title}</h3>
       <p className="text-muted-foreground">{description}</p>
+      <div className="mt-6">
+        <Button
+          className="rounded-xl border-border/70 shadow-none hover:shadow-sm"
+          variant="outline"
+        >
+          Actualiser
+        </Button>
+      </div>
     </Card>
   );
 }
