@@ -37,7 +37,12 @@ export type Review = {
   tags?: string[];
 };
 
-export type BookingStatus = "pending" | "confirmed" | "cancelled" | "completed";
+export type BookingStatus =
+  | "pending"
+  | "confirmed"
+  | "cancelled"
+  | "completed"
+  | "rejected";
 
 export type Booking = {
   id: number;

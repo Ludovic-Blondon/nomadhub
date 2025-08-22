@@ -1,6 +1,10 @@
-import { AlarmClockCheck, CheckCircle2, Clock, XCircle } from "lucide-react";
-
-import { BookingStatus } from "@/types";
+import {
+  AlarmClockCheck,
+  CheckCircle2,
+  Clock,
+  XCircle,
+  Ban,
+} from "lucide-react";
 
 export const dateFmtFR = new Intl.DateTimeFormat("fr-FR", {
   day: "numeric",
@@ -15,51 +19,51 @@ export const eurFmt = new Intl.NumberFormat("fr-FR", {
 
 export function formatDate(dateString: string) {
   const d = new Date(
-    dateString + (dateString.length === 10 ? "T00:00:00" : ""),
+    dateString + (dateString.length === 10 ? "T00:00:00" : "")
   );
 
   return dateFmtFR.format(d);
 }
 
-export const STATUS_MAP: Record<
-  BookingStatus,
-  {
-    label: string;
-    badgeClass: string;
-    variant: "default" | "secondary" | "destructive";
-    Icon: React.ComponentType<{ className?: string }>;
-    iconClass: string;
-  }
-> = {
+export const STATUS_MAP = {
   pending: {
-    label: "En attente de confirmation par l'hôte",
-    variant: "secondary",
-    badgeClass:
-      "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100",
+    label: "En attente",
     Icon: Clock,
-    iconClass: "text-amber-600",
+    dotClass: "bg-amber-500",
+    bgClass: "bg-amber-500/10 hover:bg-amber-500/15",
+    textClass: "text-amber-700 dark:text-amber-400",
+    borderClass: "border-amber-500/20",
   },
   confirmed: {
     label: "Confirmée",
-    variant: "default",
-    badgeClass:
-      "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100",
     Icon: AlarmClockCheck,
-    iconClass: "text-green-600",
+    dotClass: "bg-emerald-500",
+    bgClass: "bg-emerald-500/10 hover:bg-emerald-500/15",
+    textClass: "text-emerald-700 dark:text-emerald-400",
+    borderClass: "border-emerald-500/20",
   },
   cancelled: {
     label: "Annulée",
-    variant: "destructive",
-    badgeClass: "bg-red-50 text-red-700 border-red-200 hover:bg-red-100",
-    Icon: XCircle,
-    iconClass: "text-red-600",
+    Icon: Ban,
+    dotClass: "bg-orange-500",
+    bgClass: "bg-orange-500/10 hover:bg-orange-500/15",
+    textClass: "text-orange-700 dark:text-orange-400",
+    borderClass: "border-orange-500/20",
   },
   completed: {
     label: "Terminée",
-    variant: "default",
-    badgeClass:
-      "bg-green-50 text-green-700 border-green-200 hover:bg-green-100",
     Icon: CheckCircle2,
-    iconClass: "text-green-600",
+    dotClass: "bg-green-500",
+    bgClass: "bg-green-500/10 hover:bg-green-500/15",
+    textClass: "text-green-700 dark:text-green-400",
+    borderClass: "border-green-500/20",
+  },
+  rejected: {
+    label: "Refusée",
+    Icon: XCircle,
+    dotClass: "bg-red-500",
+    bgClass: "bg-red-500/10 hover:bg-red-500/15",
+    textClass: "text-red-700 dark:text-red-400",
+    borderClass: "border-red-500/20",
   },
 };
