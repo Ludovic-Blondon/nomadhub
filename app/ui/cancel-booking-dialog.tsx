@@ -29,7 +29,6 @@ export default function CancelBookingDialog({ booking }: { booking: Booking }) {
   };
 
   const handleReset = () => setBookingState("pending");
-
   const handleClose = () => {
     setIsOpen(false);
     setTimeout(() => handleReset(), 200);
@@ -40,26 +39,23 @@ export default function CancelBookingDialog({ booking }: { booking: Booking }) {
       <DialogTrigger asChild>
         <Button
           aria-label="Annuler la réservation"
-          className="flex-1"
-          variant="destructive"
+          className="flex-1 rounded-xl border border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive focus-visible:ring-destructive/50"
+          variant="ghost"
         >
-          Annuler la réservation
+          Annuler
         </Button>
       </DialogTrigger>
 
       <DialogContent className="w-full p-0 max-w-[100vw] sm:max-w-md h-[100svh] sm:h-auto rounded-none sm:rounded-lg overflow-hidden">
-        {/* Header simplifié */}
         <DialogHeader className="px-6 py-4 border-b border-border/50">
           <DialogTitle className="text-lg font-medium">
             Annuler la réservation
           </DialogTitle>
         </DialogHeader>
 
-        {/* Corps du dialogue */}
         <div className="px-6 py-6">
           {bookingState === "pending" && (
             <div className="space-y-6">
-              {/* Informations de réservation */}
               <div className="space-y-3">
                 <InfoRow
                   label="Période"
@@ -68,8 +64,6 @@ export default function CancelBookingDialog({ booking }: { booking: Booking }) {
                 <InfoRow label="Offre" value={booking.bargain.title} />
                 <InfoRow label="Ville" value={booking.bargain.city} />
               </div>
-
-              {/* Message d'avertissement */}
               <div className="p-4 bg-destructive/5 border border-destructive/20 rounded-md">
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   Cette action est irréversible. La réservation sera
@@ -110,7 +104,6 @@ export default function CancelBookingDialog({ booking }: { booking: Booking }) {
           )}
         </div>
 
-        {/* Footer */}
         <div className="px-6 py-4 border-t border-border/50 bg-muted/20">
           <DialogFooter className="space-y-2 sm:space-y-0">
             {bookingState === "pending" && (
@@ -129,7 +122,6 @@ export default function CancelBookingDialog({ booking }: { booking: Booking }) {
                 </Button>
               </>
             )}
-
             {bookingState !== "pending" && (
               <Button
                 className="w-full sm:w-auto"
