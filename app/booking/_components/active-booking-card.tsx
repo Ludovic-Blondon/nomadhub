@@ -7,7 +7,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Calendar, Star, User, Euro, ArrowRight } from "lucide-react";
 
-import { StatusIcon } from "./status-icon";
 import { StatusBadge } from "./status-badge";
 import { eurFmt, formatDate } from "./utils";
 
@@ -44,9 +43,6 @@ export function ActiveBookingCard({ booking }: { booking: Booking }) {
               sizes="(max-width: 1024px) 100vw, 320px"
               src={booking.bargain.images[0]}
             />
-            <div className="absolute top-3 right-3">
-              <StatusBadge status={booking.status} />
-            </div>
           </div>
 
           {/* Content */}
@@ -94,7 +90,7 @@ export function ActiveBookingCard({ booking }: { booking: Booking }) {
               </div>
 
               <div className="flex items-center gap-2 ml-4">
-                <StatusIcon status={booking.status} />
+                <StatusBadge status={booking.status} />
               </div>
             </div>
 
