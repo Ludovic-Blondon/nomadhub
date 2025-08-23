@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
+import { poppins } from "@/app/fonts";
 
 export default function AboutPage() {
   return (
@@ -8,13 +9,15 @@ export default function AboutPage() {
       <div className="container max-w-3xl px-4 py-24">
         <div className="text-center space-y-6">
           <h1 className="text-4xl md:text-5xl font-semibold tracking-tight">
-            À propos de NomadHub
+            À propos de{" "}
+            <span className={`${poppins.className} font-bold`}>NomadHub</span>
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
-            Notre mission : rendre l’hospitalité accessible, simple et humaine.
-            NomadHub connecte voyageurs et hôtes pour des séjours authentiques —
-            gratuits, basés sur la confiance et le respect.
+            Notre mission : rendre l’hospitalité accessible, simple et humaine.{" "}
+            <span className={`${poppins.className} font-bold`}>NomadHub</span>{" "}
+            connecte voyageurs et hôtes pour des séjours authentiques —
+            gratuits, basés sur la confiance et le respect.{" "}
           </p>
 
           <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
@@ -25,8 +28,10 @@ export default function AboutPage() {
 
           <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
             D’où on vient : l’envie de voyager autrement et d’accueillir sans
-            contraintes. NomadHub est né d’une communauté qui préfère la
-            rencontre aux frais cachés, l’échange à la surenchère.
+            contraintes.{" "}
+            <span className={`${poppins.className} font-bold`}>NomadHub</span>{" "}
+            est né d’une communauté qui préfère la rencontre aux frais cachés,
+            l’échange à la surenchère.
           </p>
 
           <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
