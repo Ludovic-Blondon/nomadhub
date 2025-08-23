@@ -4,12 +4,18 @@
 import Link from "next/link";
 import { useSearchParams, usePathname } from "next/navigation";
 
+import { Badge } from "@/components/ui/badge"; // si tu utilises shadcn
+
 export default function FiltersClient({
   role,
   scope,
+  activeCount,
+  pastCount,
 }: {
   role: "guest" | "host";
   scope: "active" | "past";
+  activeCount: number;
+  pastCount: number;
 }) {
   const pathname = usePathname();
   const sp = useSearchParams();
@@ -17,7 +23,6 @@ export default function FiltersClient({
   function hrefFor(next: Partial<{ role: string; scope: string }>) {
     const q = new URLSearchParams(sp.toString());
 
-    // toujours forcer les 2 clés
     q.set("role", (next.role ?? role) as string);
     q.set("scope", (next.scope ?? scope) as string);
 
@@ -55,7 +60,7 @@ export default function FiltersClient({
           </Link>
         </div>
 
-        {/* Chips scope */}
+        {/* Chips scope + compteurs */}
         <div className="flex items-center gap-2">
           <Link
             aria-pressed={scope === "active"}
@@ -68,7 +73,14 @@ export default function FiltersClient({
             scroll={false}
           >
             Actives
+            <Badge
+              className="ml-1 rounded-full"
+              variant={scope === "active" ? "default" : "secondary"}
+            >
+              {activeCount}
+            </Badge>
           </Link>
+
           <Link
             aria-pressed={scope === "past"}
             className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm ${
@@ -80,6 +92,12 @@ export default function FiltersClient({
             scroll={false}
           >
             Historique
+            <Badge
+              className="ml-1 rounded-full"
+              variant={scope === "past" ? "default" : "secondary"}
+            >
+              {pastCount}
+            </Badge>
           </Link>
         </div>
       </div>

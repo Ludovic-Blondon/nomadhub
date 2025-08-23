@@ -31,6 +31,13 @@ export default async function Page({
 
   const all =
     role === "guest" ? await getGuestBookings() : await getHostBookings();
+
+  const activeList = filterActive(all);
+  const pastList = filterPast(all);
+
+  const activeCount = activeList.length;
+  const pastCount = pastList.length;
+
   const list = scope === "active" ? filterActive(all) : filterPast(all);
 
   return (
@@ -52,7 +59,12 @@ export default async function Page({
         </form>
       </div>
 
-      <FiltersClient role={role} scope={scope} />
+      <FiltersClient
+        activeCount={activeCount}
+        pastCount={pastCount}
+        role={role}
+        scope={scope}
+      />
 
       <div className="mt-6">
         <Suspense
