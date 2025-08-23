@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { Metadata } from "next";
 
 import { ReservationList } from "./_components/reservation-list";
 import FiltersClient from "./_components/filters-client";
@@ -14,6 +15,11 @@ import {
   defaults,
 } from "@/lib/reservations";
 import { getPreference } from "@/lib/cookies";
+
+export const metadata: Metadata = {
+  title: "Réservations",
+  description: "Gérez vos réservations en un seul endroit.",
+};
 
 export default async function Page({
   searchParams,
