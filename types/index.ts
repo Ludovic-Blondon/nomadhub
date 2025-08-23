@@ -17,6 +17,14 @@ export type Bargain = {
   author: User;
 };
 
+export type BargainLight = {
+  id: number;
+  city: string;
+  neighborhood: string;
+  img: string;
+  price: string;
+};
+
 export type User = {
   name: string;
   avatarUrl?: string;
