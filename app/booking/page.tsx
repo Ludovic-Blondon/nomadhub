@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 
-// ❌ import { headers } from "next/headers";  // à supprimer
 import { ReservationList } from "./_components/reservation-list";
 import FiltersClient from "./_components/filters-client";
 import { refreshReservations } from "./actions";
