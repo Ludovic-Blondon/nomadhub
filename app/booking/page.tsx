@@ -4,25 +4,27 @@ import type { Booking } from "@/types";
 
 import React, { Suspense, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Calendar, Clock, Home, User } from "lucide-react";
+import { Calendar, Clock, Home, User, History } from "lucide-react";
 
 import { ActiveBookingCard } from "./_components/active-booking-card";
 import { PastBookingCard } from "./_components/past-booking-card";
 import { HostActiveBookingCard } from "./_components/host-active-booking-card";
 
 import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 /**
- * Page Réservations — classe & minimal (Next.js + shadcn)
- * - URL source of truth pour le rôle (?role=guest|host)
- * - Mémoire d'onglet par rôle (localStorage)
- * - Composants cartes minimalistes réutilisés
- * - UI cohérente clair/sombre via tokens shadcn
+ * Refonte: une seule barre de filtres (sobre & minimaliste)
+ * - Segmented switch rôle (Voyageur / Hôte)
+ * - Chips de statut (Actives / Historique) avec compteurs
+ * - Layout unique (pas de Tabs imbriqués)
+ * - URL = source of truth (?role=guest|host&scope=active|past)
+ * - Mémoire locale pour chaque rôle + scope
  */
 
-// --- Mock data (à remplacer par vos données serveur) ----------------------
 const guestBookings: Booking[] = [
   {
     id: 1,
@@ -236,243 +238,158 @@ const hostBookings: Booking[] = [
   },
 ];
 
-// --- Helpers --------------------------------------------------------------
+// --- Types & helpers -----------------------------------------------------
 
 type Role = "guest" | "host";
+type Scope = "active" | "past";
 
-function useUrlRole(): [Role, (r: Role) => void] {
+function useQueryState<T extends string>(
+  key: string,
+  fallback: T,
+): [T, (v: T) => void] {
   const router = useRouter();
   const params = useSearchParams();
-  const roleParam = (params.get("role") as Role) || undefined;
-
-  // Fallback: localStorage → guest
-  const role = (roleParam ||
+  const value =
+    (params.get(key) as T) ||
     (typeof window !== "undefined" &&
-      (localStorage.getItem("reservations:lastRole") as Role)) ||
-    "guest") as Role;
+      (localStorage.getItem(`reservations:${key}`) as T)) ||
+    fallback;
 
-  const setRole = (r: Role) => {
+  const setValue = (v: T) => {
     if (typeof window !== "undefined")
-      localStorage.setItem("reservations:lastRole", r);
+      localStorage.setItem(`reservations:${key}`, v);
     const search = new URLSearchParams(params?.toString());
 
-    search.set("role", r);
+    search.set(key, v);
     router.replace(`?${search.toString()}`);
   };
 
-  // Aligne l'URL au premier rendu si manquante
   useEffect(() => {
-    const current = params.get("role");
-
-    if (!current) setRole(role);
+    if (!params.get(key)) setValue(value);
   }, []);
 
-  return [role, setRole];
+  return [value as T, setValue];
 }
 
-function useRoleTabMemory(
-  role: Role,
-): ["active" | "past", (v: "active" | "past") => void] {
-  const key = `reservations:${role}:tab`;
-  const [tab, setTab] = React.useState<"active" | "past">(() => {
-    if (typeof window === "undefined") return "active";
+function useLists(role: Role) {
+  const all = role === "guest" ? guestBookings : hostBookings;
+  const active = useMemo(
+    () => all.filter((b) => b.status === "pending" || b.status === "confirmed"),
+    [all],
+  );
+  const past = useMemo(
+    () =>
+      all.filter((b) =>
+        ["cancelled", "completed", "rejected"].includes(b.status),
+      ),
+    [all],
+  );
 
-    return (localStorage.getItem(key) as "active" | "past") || "active";
-  });
-
-  const update = (v: "active" | "past") => {
-    setTab(v);
-    if (typeof window !== "undefined") localStorage.setItem(key, v);
-  };
-
-  return [tab, update];
+  return { all, active, past };
 }
 
-// --- Page -----------------------------------------------------------------
+// --- Page ----------------------------------------------------------------
 
-function ReservationsPage() {
-  const [role, setRole] = useUrlRole();
+function ReservationsContent() {
+  const [role, setRole] = useQueryState<Role>("role", "guest");
+  const [scope, setScope] = useQueryState<Scope>("scope", "active");
 
-  // Listes mémoïsées
-  const guestActive = useMemo(
-    () =>
-      guestBookings.filter(
-        (b) => b.status === "pending" || b.status === "confirmed",
-      ),
-    [],
-  );
-  const guestPast = useMemo(
-    () =>
-      guestBookings.filter((b) =>
-        ["cancelled", "completed", "rejected"].includes(b.status),
-      ),
-    [],
-  );
-
-  const hostActive = useMemo(
-    () =>
-      hostBookings.filter(
-        (b) => b.status === "pending" || b.status === "confirmed",
-      ),
-    [],
-  );
-  const hostPast = useMemo(
-    () =>
-      hostBookings.filter((b) =>
-        ["cancelled", "completed", "rejected"].includes(b.status),
-      ),
-    [],
-  );
-
-  const [guestTab, setGuestTab] = useRoleTabMemory("guest");
-  const [hostTab, setHostTab] = useRoleTabMemory("host");
-
-  const guestDefault: "active" | "past" =
-    guestActive.length > 0 ? "active" : "past";
-  const hostDefault: "active" | "past" =
-    hostActive.length > 0 ? "active" : "past";
-
-  useEffect(() => {
-    // Choix par défaut sensé si pas de mémoire locale
-    if (role === "guest" && !localStorage.getItem("reservations:guest:tab"))
-      setGuestTab(guestDefault);
-    if (role === "host" && !localStorage.getItem("reservations:host:tab"))
-      setHostTab(hostDefault);
-  }, [role]);
+  const { active, past } = useLists(role);
+  const list = scope === "active" ? active : past;
 
   return (
     <div className="container mx-auto max-w-6xl px-4 py-8">
       {/* Header */}
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">
             Réservations
           </h1>
           <p className="mt-1 text-muted-foreground">
-            Gérez vos réservations côté voyageur et côté hôte
+            Côté voyageur et côté hôte, en un seul endroit.
           </p>
+        </div>
+
+        {/* Actions secondaires */}
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" onClick={() => location.reload()}>
+            Actualiser
+          </Button>
         </div>
       </div>
 
-      {/* Tabs Rôle */}
-      <Tabs
-        className="space-y-8"
-        value={role}
-        onValueChange={(v) => setRole(v as Role)}
-      >
-        <TabsList className="grid w-full grid-cols-2 rounded-xl border border-border/60 bg-card/60 backdrop-blur supports-[backdrop-filter]:bg-card/50 lg:w-[420px]">
-          <TabsTrigger className="flex items-center gap-2" value="guest">
-            <User className="h-4 w-4" /> Voyageur ({guestActive.length})
-          </TabsTrigger>
-          <TabsTrigger className="flex items-center gap-2" value="host">
-            <Home className="h-4 w-4" /> Hôte ({hostActive.length})
-          </TabsTrigger>
-        </TabsList>
+      {/* Barre de filtres (segmented + chips) */}
+      <Card className="rounded-2xl border border-border/60 bg-card/60 p-2 backdrop-blur supports-[backdrop-filter]:bg-card/50">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          {/* Segmented rôle */}
+          <div className="inline-flex rounded-xl border border-border/60 p-1">
+            <SegmentedItem
+              active={role === "guest"}
+              onClick={() => setRole("guest")}
+            >
+              <User className="h-4 w-4" />
+              <span className="ml-2 hidden sm:inline">Voyageur</span>
+            </SegmentedItem>
+            <SegmentedItem
+              active={role === "host"}
+              onClick={() => setRole("host")}
+            >
+              <Home className="h-4 w-4" />
+              <span className="ml-2 hidden sm:inline">Hôte</span>
+            </SegmentedItem>
+          </div>
 
-        {/* Guest */}
-        <TabsContent className="space-y-6" value="guest">
-          <RoleSection
-            activeCount={guestActive.length}
-            activeList={guestActive}
-            defaultTab={guestDefault}
-            pastCount={guestPast.length}
-            pastList={guestPast}
-            subtitle="Gérez et suivez vos réservations en tant que client"
-            tab={guestTab}
-            title="Mes réservations (voyageur)"
-            onTabChange={setGuestTab}
-          />
-        </TabsContent>
+          {/* Chips scope */}
+          <div className="flex items-center gap-2">
+            <ScopeChip
+              active={scope === "active"}
+              count={active.length}
+              icon={<Clock className="h-4 w-4" />}
+              label="Actives"
+              onClick={() => setScope("active")}
+            />
+            <ScopeChip
+              active={scope === "past"}
+              count={past.length}
+              icon={<History className="h-4 w-4" />}
+              label="Historique"
+              onClick={() => setScope("past")}
+            />
 
-        {/* Host */}
-        <TabsContent className="space-y-6" value="host">
-          <RoleSection
-            activeCount={hostActive.length}
-            activeList={hostActive}
-            defaultTab={hostDefault}
-            pastCount={hostPast.length}
-            pastList={hostPast}
-            subtitle="Acceptez, refusez et suivez les séjours"
-            tab={hostTab}
-            title="Réservations de mes annonces (hôte)"
-            onTabChange={setHostTab}
-          />
-        </TabsContent>
-      </Tabs>
-    </div>
-  );
-}
+            <Separator
+              className="mx-1 hidden h-5 sm:block"
+              orientation="vertical"
+            />
+          </div>
+        </div>
+      </Card>
 
-// --- Sous-composants ------------------------------------------------------
-
-type RoleSectionProps = {
-  title: string;
-  subtitle: string;
-  activeCount: number;
-  pastCount: number;
-  defaultTab: "active" | "past";
-  tab: "active" | "past";
-  onTabChange: (v: "active" | "past") => void;
-  activeList: Booking[];
-  pastList: Booking[];
-  role?: Role;
-};
-
-function RoleSection({
-  title,
-  subtitle,
-  activeCount,
-  pastCount,
-  defaultTab,
-  tab,
-  onTabChange,
-  activeList,
-  pastList,
-}: RoleSectionProps) {
-  const [role] = useUrlRole();
-
-  return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
-        <p className="mt-1 text-muted-foreground">{subtitle}</p>
-      </div>
-
-      {/* Onglets statut */}
-      <Tabs
-        className="space-y-6"
-        defaultValue={defaultTab}
-        value={tab}
-        onValueChange={(v) => onTabChange(v as "active" | "past")}
-      >
-        <TabsList className="grid w-full grid-cols-2 rounded-xl border border-border/60 bg-card/60 backdrop-blur supports-[backdrop-filter]:bg-card/50 lg:w-[420px]">
-          <TabsTrigger className="flex items-center gap-2" value="active">
-            <Clock className="h-4 w-4" /> Réservations actives ({activeCount})
-          </TabsTrigger>
-          <TabsTrigger className="flex items-center gap-2" value="past">
-            <Calendar className="h-4 w-4" /> Historique ({pastCount})
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent className="space-y-4" value="active">
-          {activeList.length === 0 ? (
-            <EmptyState
-              description={
-                role === "host"
+      {/* Contenu list/grid */}
+      <div className="mt-6 space-y-4">
+        {list.length === 0 ? (
+          <EmptyState
+            description={
+              scope === "active"
+                ? role === "host"
                   ? "Les demandes et séjours confirmés apparaîtront ici lorsque vous êtes hôte."
                   : "Vos réservations en cours apparaîtront ici."
-              }
-              icon={
-                <Calendar className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-              }
-              title={
-                role === "host"
+                : role === "host"
+                  ? "Vos séjours terminés ou annulés côté hôte apparaîtront ici."
+                  : "Vos réservations passées apparaîtront ici."
+            }
+            title={
+              scope === "active"
+                ? role === "host"
                   ? "Aucune réservation active côté hôte"
                   : "Aucune réservation active"
-              }
-            />
-          ) : (
-            activeList.map((booking) =>
+                : role === "host"
+                  ? "Aucun historique côté hôte"
+                  : "Aucun historique"
+            }
+          />
+        ) : (
+          list.map((booking) =>
+            scope === "active" ? (
               role === "host" ? (
                 <HostActiveBookingCard
                   key={`${role}-${booking.id}`}
@@ -483,60 +400,100 @@ function RoleSection({
                   key={`${role}-${booking.id}`}
                   booking={booking}
                 />
-              ),
-            )
-          )}
-        </TabsContent>
-
-        <TabsContent className="space-y-4" value="past">
-          {pastList.length === 0 ? (
-            <EmptyState
-              description={
-                role === "host"
-                  ? "Vos séjours terminés ou annulés côté hôte apparaîtront ici."
-                  : "Vos réservations passées apparaîtront ici."
-              }
-              icon={
-                <Calendar className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-              }
-              title={
-                role === "host"
-                  ? "Aucun historique côté hôte"
-                  : "Aucun historique"
-              }
-            />
-          ) : (
-            pastList.map((booking) => (
+              )
+            ) : (
               <PastBookingCard
                 key={`${role}-${booking.id}`}
                 booking={booking}
               />
-            ))
-          )}
-        </TabsContent>
-      </Tabs>
+            ),
+          )
+        )}
+      </div>
     </div>
   );
 }
 
-function EmptyState({
+// --- UI building blocks --------------------------------------------------
+
+function SegmentedItem({
+  active,
+  onClick,
+  children,
+}: {
+  active?: boolean;
+  onClick?: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      className={cn(
+        "inline-flex items-center rounded-lg px-3 py-2 text-sm transition",
+        active
+          ? "bg-primary text-primary-foreground shadow-sm"
+          : "text-foreground/80 hover:bg-muted/50",
+      )}
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  );
+}
+
+function ScopeChip({
+  active,
+  onClick,
   icon,
+  label,
+  count,
+}: {
+  active?: boolean;
+  onClick?: () => void;
+  icon: React.ReactNode;
+  label: string;
+  count?: number;
+}) {
+  return (
+    <button
+      className={cn(
+        "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm",
+        active
+          ? "border-primary/60 bg-primary/10"
+          : "border-border/60 hover:bg-muted/40",
+      )}
+      onClick={onClick}
+    >
+      {icon}
+      <span>{label}</span>
+      {typeof count === "number" && (
+        <Badge
+          className="ml-1 rounded-full"
+          variant={active ? "default" : "secondary"}
+        >
+          {count}
+        </Badge>
+      )}
+    </button>
+  );
+}
+
+function EmptyState({
   title,
   description,
 }: {
-  icon: React.ReactNode;
   title: string;
   description: string;
 }) {
   return (
     <Card className="rounded-2xl border border-border/60 bg-card/60 p-8 text-center backdrop-blur supports-[backdrop-filter]:bg-card/50">
-      {icon}
+      <Calendar className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
       <h3 className="mb-2 text-lg font-semibold">{title}</h3>
       <p className="text-muted-foreground">{description}</p>
       <div className="mt-6">
         <Button
           className="rounded-xl border-border/70 shadow-none hover:shadow-sm"
           variant="outline"
+          onClick={() => location.reload()}
         >
           Actualiser
         </Button>
@@ -545,11 +502,12 @@ function EmptyState({
   );
 }
 
-// Wrapper requis par Next.js lorsque la page (Client) utilise useSearchParams
+// --- Wrapper -------------------------------------------------------------
+
 export default function Page() {
   return (
     <Suspense fallback={<PageSkeleton />}>
-      <ReservationsPage />
+      <ReservationsContent />
     </Suspense>
   );
 }
@@ -558,7 +516,7 @@ function PageSkeleton() {
   return (
     <div className="container mx-auto max-w-6xl px-4 py-8">
       <div className="mb-8 h-8 w-48 rounded-lg bg-muted/40" />
-      <div className="mb-4 h-10 w-72 rounded-xl border border-border/60 bg-card/60" />
+      <div className="mb-4 h-12 w-full rounded-2xl border border-border/60 bg-card/60" />
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="h-48 rounded-2xl border border-border/60 bg-card/60" />
         <div className="h-48 rounded-2xl border border-border/60 bg-card/60" />
