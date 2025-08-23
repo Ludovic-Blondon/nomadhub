@@ -1,7 +1,14 @@
 import Link from "next/link";
+import { Metadata } from "next";
 
 import { Button } from "@/components/ui/button";
 import { poppins } from "@/app/fonts";
+
+export const metadata: Metadata = {
+  title: "Soutenir",
+  description:
+    "Aidez-nous à faire grandir une communauté d’hospitalité libre et bienveillante.",
+};
 
 export default function DonatePage() {
   return (

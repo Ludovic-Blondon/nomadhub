@@ -1,7 +1,14 @@
 import Link from "next/link";
+import { Metadata } from "next";
 
 import { Button } from "@/components/ui/button";
 import { poppins } from "@/app/fonts";
+
+export const metadata: Metadata = {
+  title: "Comment ça marche ?",
+  description:
+    "Comment ça marche ? NomadHub connecte voyageurs et hôtes pour des séjours authentiques.",
+};
 
 export default function HowItWorks() {
   return (

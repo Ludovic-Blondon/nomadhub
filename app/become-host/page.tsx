@@ -1,6 +1,12 @@
 import Link from "next/link";
+import { Metadata } from "next";
 
 import { Button } from "@/components/ui/button";
+
+export const metadata: Metadata = {
+  title: "Devenir hôte",
+  description: "Accueillez des voyageurs quand vous le souhaitez.",
+};
 
 export default function BecomeHost() {
   return (

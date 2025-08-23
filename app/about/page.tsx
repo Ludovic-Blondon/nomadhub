@@ -1,7 +1,13 @@
 import Link from "next/link";
+import { Metadata } from "next";
 
 import { Button } from "@/components/ui/button";
 import { poppins } from "@/app/fonts";
+
+export const metadata: Metadata = {
+  title: "À propos",
+  description: "À propos de NomadHub, son histoire et son fonctionnement.",
+};
 
 export default function AboutPage() {
   return (
