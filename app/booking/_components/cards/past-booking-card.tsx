@@ -1,7 +1,7 @@
 import Image from "next/image";
 
-import { formatDate } from "./utils";
-import { StatusBadge } from "./status-badge";
+import { formatDate } from "../utils";
+import { StatusBadge } from "../status-badge";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Booking } from "@/types";
