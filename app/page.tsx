@@ -1,5 +1,6 @@
 "use client";
 import { Card, CardBody, CardFooter, Image, Link } from "@heroui/react";
+import { ArrowUpRight } from "lucide-react"; // pour l'icône flèche
 
 export default function Home() {
   const list = [
@@ -96,25 +97,42 @@ export default function Home() {
           key={item.id}
           isPressable
           as={Link}
+          className="group"
           href={`/bargain/${item.id}`}
           shadow="sm"
         >
-          <CardBody className="overflow-visible p-0">
-            <Image
-              alt={item.city}
-              className="w-full object-cover h-[140px]"
-              radius="lg"
-              shadow="sm"
-              src={item.img}
-              width="100%"
-            />
+          <CardBody className="p-0">
+            {/* wrapper pour superposer le badge au-dessus de l'image */}
+            <div className="relative">
+              <Image
+                alt={item.city}
+                className="w-full object-cover h-[140px]"
+                radius="lg"
+                shadow="sm"
+                src={item.img}
+                width="100%"
+              />
+              {/* Badge prix visible en dark */}
+              <span
+                className="
+                  absolute right-2 top-2 z-10
+                  rounded-full border border-default-200
+                  bg-background/80 px-2 py-1 text-xs font-medium text-foreground
+                  shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60
+                "
+              >
+                {item.price}
+              </span>
+            </div>
           </CardBody>
-          <CardFooter className="text-small justify-between">
+
+          <CardFooter className="text-small justify-between items-center">
             <p>
               <b>{item.city}</b>
               <i className="text-default-500"> {item.neighborhood}</i>
             </p>
-            <p className="text-default-500">{item.price}</p>
+            {/* Icône flèche avec contraste correct en dark */}
+            <ArrowUpRight className="w-4 h-4 text-default-500 transition-colors group-hover:text-foreground" />
           </CardFooter>
         </Card>
       ))}
