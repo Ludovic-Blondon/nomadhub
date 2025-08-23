@@ -1,6 +1,6 @@
 "use client";
 import { Card, CardBody, CardFooter, Image, Link } from "@heroui/react";
-import { ArrowUpRight } from "lucide-react"; // pour l'icône flèche
+import { ArrowUpRight } from "lucide-react";
 
 export default function Home() {
   const list = [
@@ -102,7 +102,6 @@ export default function Home() {
           shadow="sm"
         >
           <CardBody className="p-0">
-            {/* wrapper pour superposer le badge au-dessus de l'image */}
             <div className="relative">
               <Image
                 alt={item.city}
@@ -112,7 +111,6 @@ export default function Home() {
                 src={item.img}
                 width="100%"
               />
-              {/* Badge prix visible en dark */}
               <span
                 className="
                   absolute right-2 top-2 z-10
@@ -131,7 +129,6 @@ export default function Home() {
               <b>{item.city}</b>
               <i className="text-default-500"> {item.neighborhood}</i>
             </p>
-            {/* Icône flèche avec contraste correct en dark */}
             <ArrowUpRight className="w-4 h-4 text-default-500 transition-colors group-hover:text-foreground" />
           </CardFooter>
         </Card>
