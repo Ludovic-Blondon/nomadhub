@@ -41,6 +41,10 @@ export const guestBookings: Booking[] = [
       ],
       author: { name: "John Doe", avatarUrl: "https://github.com/shadcn.png" },
     },
+    guest: {
+      name: "Jacques Doe",
+      avatarUrl: "https://github.com/shadcn.png",
+    },
   },
   {
     id: 2,
@@ -61,6 +65,10 @@ export const guestBookings: Booking[] = [
       },
       description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque euismod, nisi eu consectetur cursus, enim erat dictum erat, nec dictum enim enim euismod enim.",
+    },
+    guest: {
+      name: "Jacques Doe",
+      avatarUrl: "https://github.com/shadcn.png",
     },
   },
   {
@@ -83,6 +91,10 @@ export const guestBookings: Booking[] = [
       description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque euismod, nisi eu consectetur cursus, enim erat dictum erat, nec dictum enim enim euismod enim.",
     },
+    guest: {
+      name: "Jacques Doe",
+      avatarUrl: "https://github.com/shadcn.png",
+    },
   },
   {
     id: 4,
@@ -104,6 +116,10 @@ export const guestBookings: Booking[] = [
       description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque euismod, nisi eu consectetur cursus, enim erat dictum erat, nec dictum enim enim euismod enim.",
     },
+    guest: {
+      name: "Jacques Doe",
+      avatarUrl: "https://github.com/shadcn.png",
+    },
   },
   {
     id: 5,
@@ -124,6 +140,10 @@ export const guestBookings: Booking[] = [
       },
       description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque euismod, nisi eu consectetur cursus, enim erat dictum erat, nec dictum enim enim euismod enim.",
+    },
+    guest: {
+      name: "Jacques Doe",
+      avatarUrl: "https://github.com/shadcn.png",
     },
   },
 ];
@@ -149,6 +169,10 @@ export const hostBookings: Booking[] = [
       description:
         "Demande en attente : l'hôte peut accepter ou refuser la réservation.",
     },
+    guest: {
+      name: "Jacques Doe",
+      avatarUrl: "https://github.com/shadcn.png",
+    },
   },
   {
     id: 102,
@@ -168,6 +192,10 @@ export const hostBookings: Booking[] = [
         avatarUrl: "https://github.com/shadcn.png",
       },
       description: "Demande refusée : l'hôte a refusé la réservation.",
+    },
+    guest: {
+      name: "Jacques Doe",
+      avatarUrl: "https://github.com/shadcn.png",
     },
   },
   {
@@ -190,6 +218,10 @@ export const hostBookings: Booking[] = [
       description:
         "Séjour confirmé : vous pouvez envoyer des instructions d'arrivée.",
     },
+    guest: {
+      name: "Jacques Doe",
+      avatarUrl: "https://github.com/shadcn.png",
+    },
   },
   {
     id: 103,
@@ -209,6 +241,10 @@ export const hostBookings: Booking[] = [
         avatarUrl: "https://github.com/shadcn.png",
       },
       description: "Séjour achevé : pensez à laisser un avis invité.",
+    },
+    guest: {
+      name: "Jacques Doe",
+      avatarUrl: "https://github.com/shadcn.png",
     },
   },
 ];
