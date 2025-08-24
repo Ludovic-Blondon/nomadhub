@@ -13,12 +13,12 @@ import {
   Euro,
   ArrowRight,
   X,
-  Ban,
 } from "lucide-react";
 
 import { StatusBadge } from "../status-badge";
 import { eurFmt, formatDate } from "../utils";
 import HostBookingDialog from "../dialogs/host-booking-dialog";
+import CancelBookingDialog from "../dialogs/cancel-booking-dialog";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -238,17 +238,7 @@ export function HostActiveBookingCard({
                 </div>
               )}
 
-              {canCancel && (
-                <ConfirmButton
-                  actionLabel="Annuler"
-                  description="Cette action annulera la réservation confirmée. Des pénalités peuvent s'appliquer selon vos conditions."
-                  icon={<Ban className="h-4 w-4" />}
-                  intent="danger-outline"
-                  loading={isPending}
-                  title="Annuler en tant qu'hôte ?"
-                  onConfirm={run(onCancel)}
-                />
-              )}
+              {canCancel && <CancelBookingDialog booking={booking} />}
             </div>
           </div>
         </div>
