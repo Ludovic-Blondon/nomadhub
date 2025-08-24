@@ -32,7 +32,7 @@ export default function BecomeHost() {
               size="lg"
               variant="outline"
             >
-              <Link href="/login">Se connecter</Link>
+              <Link href="/sign-in">Se connecter</Link>
             </Button>
           </div>
 
