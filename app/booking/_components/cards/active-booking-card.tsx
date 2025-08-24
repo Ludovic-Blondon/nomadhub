@@ -13,7 +13,7 @@ import { eurFmt, formatDate } from "../utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import CancelBookingDialog from "@/app/ui/cancel-booking-dialog";
+import CancelBookingDialog from "@/app/booking/_components/dialogs/cancel-booking-dialog";
 
 function nightsBetween(start: string, end: string) {
   const [y1, m1, d1] = start.split("-").map(Number);

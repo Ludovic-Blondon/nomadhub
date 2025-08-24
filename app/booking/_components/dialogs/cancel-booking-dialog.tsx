@@ -3,6 +3,7 @@
 import type { Booking } from "@/types";
 
 import { useState } from "react";
+import { Ban } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -42,7 +43,8 @@ export default function CancelBookingDialog({ booking }: { booking: Booking }) {
           className="flex-1 rounded-xl border border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive focus-visible:ring-destructive/50"
           variant="ghost"
         >
-          Annuler
+          <Ban className="h-4 w-4" />
+          <span className="ml-2">Annuler</span>
         </Button>
       </DialogTrigger>
 
