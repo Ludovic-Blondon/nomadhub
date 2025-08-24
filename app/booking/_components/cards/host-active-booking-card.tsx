@@ -12,13 +12,13 @@ import {
   User,
   Euro,
   ArrowRight,
-  Check,
   X,
   Ban,
 } from "lucide-react";
 
 import { StatusBadge } from "../status-badge";
 import { eurFmt, formatDate } from "../utils";
+import HostBookingDialog from "../dialogs/host-booking-dialog";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -224,15 +224,7 @@ export function HostActiveBookingCard({
 
               {canAcceptDecline && (
                 <div className="flex flex-1 gap-2">
-                  <ConfirmButton
-                    actionLabel="Accepter"
-                    description="Le séjour passera au statut confirmé et l'invité sera notifié."
-                    icon={<Check className="h-4 w-4" />}
-                    intent="confirm"
-                    loading={isPending}
-                    title="Accepter la réservation ?"
-                    onConfirm={run(onAccept)}
-                  />
+                  <HostBookingDialog booking={booking} />
 
                   <ConfirmButton
                     actionLabel="Refuser"
