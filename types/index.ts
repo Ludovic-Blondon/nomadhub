@@ -58,4 +58,5 @@ export type Booking = {
   startDate: string; // YYYY-MM-DD
   endDate: string; // YYYY-MM-DD
   bargain: Bargain;
+  guest: User;
 };

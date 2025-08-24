@@ -148,8 +148,8 @@ export function HostActiveBookingCard({
                 <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
                   <Avatar className="h-6 w-6 ring-1 ring-border/60">
                     <AvatarImage
-                      alt={booking.guest?.name || "Invité"}
-                      src={booking.guest?.avatarUrl}
+                      alt={booking.guest.name}
+                      src={booking.guest.avatarUrl}
                     />
                     <AvatarFallback>
                       <User aria-hidden="true" className="h-3 w-3" />
@@ -158,7 +158,7 @@ export function HostActiveBookingCard({
                   <span>
                     Demande par{" "}
                     <span className="text-foreground/90 font-medium">
-                      {booking.guest?.name || "Invité"}
+                      {booking.guest.name}
                     </span>
                   </span>
                 </div>
