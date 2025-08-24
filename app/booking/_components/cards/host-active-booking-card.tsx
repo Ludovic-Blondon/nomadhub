@@ -17,8 +17,8 @@ import {
   Ban,
 } from "lucide-react";
 
-import { StatusBadge } from "./status-badge";
-import { eurFmt, formatDate } from "./utils";
+import { StatusBadge } from "../status-badge";
+import { eurFmt, formatDate } from "../utils";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

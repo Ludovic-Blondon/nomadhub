@@ -1,5 +1,4 @@
-"use client";
-import { Card, CardBody, CardFooter, Image, Link } from "@heroui/react";
+import HomeCard from "@/app/ui/home-card";
 
 export default function Home() {
   const list = [
@@ -92,31 +91,7 @@ export default function Home() {
   return (
     <div className="gap-2 grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 p-4">
       {list.map((item) => (
-        <Card
-          key={item.id}
-          isPressable
-          as={Link}
-          href={`/bargain/${item.id}`}
-          shadow="sm"
-        >
-          <CardBody className="overflow-visible p-0">
-            <Image
-              alt={item.city}
-              className="w-full object-cover h-[140px]"
-              radius="lg"
-              shadow="sm"
-              src={item.img}
-              width="100%"
-            />
-          </CardBody>
-          <CardFooter className="text-small justify-between">
-            <p>
-              <b>{item.city}</b>
-              <i className="text-default-500"> {item.neighborhood}</i>
-            </p>
-            <p className="text-default-500">{item.price}</p>
-          </CardFooter>
-        </Card>
+        <HomeCard key={item.id} item={item} />
       ))}
     </div>
   );

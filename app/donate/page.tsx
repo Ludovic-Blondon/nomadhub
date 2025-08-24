@@ -1,6 +1,14 @@
 import Link from "next/link";
+import { Metadata } from "next";
 
 import { Button } from "@/components/ui/button";
+import { poppins } from "@/app/fonts";
+
+export const metadata: Metadata = {
+  title: "Soutenir",
+  description:
+    "Aidez-nous à faire grandir une communauté d’hospitalité libre et bienveillante.",
+};
 
 export default function DonatePage() {
   return (
@@ -8,7 +16,8 @@ export default function DonatePage() {
       <div className="container max-w-3xl px-4 py-24">
         <div className="text-center space-y-6">
           <h1 className="text-4xl md:text-5xl font-semibold tracking-tight">
-            Soutenir NomadHub
+            Soutenir{" "}
+            <span className={`${poppins.className} font-bold`}>NomadHub</span>
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">

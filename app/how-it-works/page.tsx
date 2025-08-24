@@ -1,6 +1,14 @@
 import Link from "next/link";
+import { Metadata } from "next";
 
 import { Button } from "@/components/ui/button";
+import { poppins } from "@/app/fonts";
+
+export const metadata: Metadata = {
+  title: "Comment ça marche ?",
+  description:
+    "Comment ça marche ? NomadHub connecte voyageurs et hôtes pour des séjours authentiques.",
+};
 
 export default function HowItWorks() {
   return (
@@ -12,9 +20,10 @@ export default function HowItWorks() {
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
-            NomadHub connecte voyageurs et hôtes pour des séjours authentiques.
-            L&apos;accueil est gratuit, le don de remerciement est 100%
-            optionnel. Vous fixez vos disponibilités et vos règles.
+            <span className={`${poppins.className} font-bold`}>NomadHub</span>{" "}
+            connecte voyageurs et hôtes pour des séjours authentiques. L&apos;
+            accueil est gratuit, le don de remerciement est 100% optionnel. Vous
+            fixez vos disponibilités et vos règles.
           </p>
 
           <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
