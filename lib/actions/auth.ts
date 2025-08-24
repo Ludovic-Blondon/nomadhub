@@ -3,23 +3,49 @@
 
 import { redirect } from "next/navigation";
 
-export async function signIn(formData: FormData) {
+export type LoginState = {
+  ok: boolean;
+  message?: string;
+  fieldErrors?: Partial<Record<"email" | "password", string | string[]>>;
+  values?: Partial<Record<"email", string>>;
+};
+
+export async function signIn(
+  _prevState: LoginState,
+  formData: FormData
+): Promise<LoginState> {
   const email = (formData.get("email") || "").toString();
   const password = (formData.get("password") || "").toString();
 
   // Basic guard (optionnel)
-  if (!email || !password) {
+  if (!email) {
     // Tu peux retourner une valeur pour useFormState si tu veux afficher l'erreur.
     // Ici on redirige simplement:
-    redirect("/sign-in?error=missing-fields");
+    return {
+      ok: false,
+      message: "Email is required",
+      fieldErrors: {
+        email: "Email is required",
+      },
+      values: {
+        email: email,
+      },
+    };
+  }
+  if (!password) {
+    return {
+      ok: false,
+      message: "Password is required",
+      fieldErrors: {
+        password: "Password is required",
+      },
+      values: {},
+    };
   }
 
   // Déclenche l’auth Credentials (gérée par NextAuth v5)
   await new Promise((resolve) => setTimeout(resolve, 1000));
   redirect("/");
-
-  // Note: signIn déclenche déjà une redirection côté serveur.
-  // Si tu veux forcer une route après coup, tu peux encore utiliser redirect(...)
 }
 
 export async function googleSignIn() {
