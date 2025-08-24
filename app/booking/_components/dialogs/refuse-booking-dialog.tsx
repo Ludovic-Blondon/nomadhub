@@ -3,7 +3,7 @@
 import type { Booking } from "@/types";
 
 import { useState } from "react";
-import { Check } from "lucide-react";
+import { X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,7 +19,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type CancelBookingState = "pending" | "loading" | "cancelled";
 
-export default function CancelBookingDialog({ booking }: { booking: Booking }) {
+export default function RefuseBookingDialog({ booking }: { booking: Booking }) {
   const [bookingState, setBookingState] =
     useState<CancelBookingState>("pending");
   const [isOpen, setIsOpen] = useState(false);
@@ -40,18 +40,18 @@ export default function CancelBookingDialog({ booking }: { booking: Booking }) {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
-          className="flex-1 rounded-xl shadow-none hover:shadow-sm"
-          variant="default"
+          className="flex-1 rounded-xl border border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive focus-visible:ring-destructive/50"
+          variant="ghost"
         >
-          <Check className="h-4 w-4" />
-          <span className="ml-2">Accepter</span>
+          <X className="h-4 w-4" />
+          <span className="ml-2">Refuser</span>
         </Button>
       </DialogTrigger>
 
       <DialogContent className="w-full p-0 max-w-[100vw] sm:max-w-md h-[100svh] sm:h-auto rounded-none sm:rounded-lg overflow-hidden">
         <DialogHeader className="px-6 py-4 border-b border-border/50">
           <DialogTitle className="text-lg font-medium">
-            Traiter la réservation
+            Refuser la réservation
           </DialogTitle>
         </DialogHeader>
 
@@ -111,7 +111,7 @@ export default function CancelBookingDialog({ booking }: { booking: Booking }) {
                   />
                 </svg>
               </div>
-              <p className="text-sm font-medium">Réservation acceptée</p>
+              <p className="text-sm font-medium">Réservation refusée</p>
             </div>
           )}
         </div>
@@ -127,10 +127,10 @@ export default function CancelBookingDialog({ booking }: { booking: Booking }) {
                 </DialogClose>
                 <Button
                   className="w-full sm:w-auto"
-                  variant="default"
+                  variant="destructive"
                   onClick={handleSubmit}
                 >
-                  Accepter
+                  Refuser
                 </Button>
               </>
             )}
