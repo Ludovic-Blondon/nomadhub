@@ -46,12 +46,14 @@ export function LoginForm({
               <AlertDescription>{state.message}</AlertDescription>
             </Alert>
           )}
-          <form action={formAction}>
+          <form noValidate action={formAction}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
                 <Label htmlFor="email">Email</Label>
                 <Input
+                  aria-invalid={!!state?.fieldErrors?.email}
                   autoComplete="email"
+                  defaultValue={(state.values?.email as string) ?? ""}
                   id="email"
                   name="email"
                   placeholder="m@example.com"
@@ -69,9 +71,11 @@ export function LoginForm({
                   </Link>
                 </div>
                 <Input
+                  aria-invalid={!!state?.fieldErrors?.password}
                   autoComplete="current-password"
                   id="password"
                   name="password"
+                  placeholder="••••••••"
                   type="password"
                 />
               </div>

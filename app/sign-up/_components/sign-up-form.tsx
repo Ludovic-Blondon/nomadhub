@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { AlertCircle } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useActionState } from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -15,34 +15,20 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { signUp, googleSignIn } from "@/lib/actions/auth"; // ⬅️ à implémenter côté serveur
-
-function mapSignUpError(code?: string | null) {
-  switch (code) {
-    case "EmailAlreadyExists":
-      return "Un compte existe déjà avec cet email.";
-    case "InvalidEmail":
-      return "Email invalide.";
-    case "WeakPassword":
-      return "Mot de passe trop faible (8+ caractères recommandés).";
-    case "OAuthAccountNotLinked":
-      return "Un compte existe déjà avec cet email. Connecte-toi avec la méthode initiale.";
-    case "AccessDenied":
-      return "Accès refusé.";
-    case "Configuration":
-      return "Erreur de configuration de l’authentification.";
-    default:
-      return code ? "Une erreur est survenue. Réessaie." : null;
-  }
-}
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { signUp, googleSignIn, SignUpState } from "@/lib/actions/auth"; // ⬅️ à implémenter côté serveur
 
 export default function SignUpForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const searchParams = useSearchParams();
-  const errorMsg = mapSignUpError(searchParams.get("error"));
+  const initialState: SignUpState = {
+    ok: false,
+    message: undefined,
+    fieldErrors: {},
+    values: {},
+  };
+  const [state, formAction, pending] = useActionState(signUp, initialState);
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -55,21 +41,21 @@ export default function SignUpForm({
         </CardHeader>
 
         <CardContent>
-          {errorMsg && (
+          {state?.message && (
             <Alert aria-live="polite" className="mb-4" variant="destructive">
               <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Échec de l’inscription</AlertTitle>
-              <AlertDescription>{errorMsg}</AlertDescription>
+              <AlertDescription>{state.message}</AlertDescription>
             </Alert>
           )}
 
-          <form action={signUp}>
+          <form noValidate action={formAction}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
                 <Label htmlFor="name">Nom complet</Label>
                 <Input
-                  required
+                  aria-invalid={!!state?.fieldErrors?.name}
                   autoComplete="name"
+                  defaultValue={(state.values?.name as string) ?? ""}
                   id="name"
                   name="name"
                   placeholder="Ada Lovelace"
@@ -80,8 +66,9 @@ export default function SignUpForm({
               <div className="grid gap-3">
                 <Label htmlFor="email">Email</Label>
                 <Input
-                  required
+                  aria-invalid={!!state?.fieldErrors?.email}
                   autoComplete="email"
+                  defaultValue={(state.values?.email as string) ?? ""}
                   id="email"
                   name="email"
                   placeholder="m@example.com"
@@ -92,7 +79,6 @@ export default function SignUpForm({
               <div className="grid gap-3">
                 <Label htmlFor="password">Mot de passe</Label>
                 <Input
-                  required
                   autoComplete="new-password"
                   id="password"
                   minLength={8}
@@ -109,7 +95,6 @@ export default function SignUpForm({
                   Confirmer le mot de passe
                 </Label>
                 <Input
-                  required
                   autoComplete="new-password"
                   id="confirmPassword"
                   minLength={8}
@@ -120,8 +105,9 @@ export default function SignUpForm({
 
               <div className="flex items-start gap-3 text-sm">
                 <input
-                  required
+                  aria-invalid={!!state?.fieldErrors?.terms}
                   className="mt-1 h-4 w-4 rounded border-muted-foreground/40"
+                  defaultChecked={Boolean(state.values?.terms)}
                   id="terms"
                   name="terms"
                   type="checkbox"
@@ -132,7 +118,7 @@ export default function SignUpForm({
               </div>
 
               <div className="flex flex-col gap-3">
-                <Button className="w-full" type="submit">
+                <Button className="w-full" disabled={pending} type="submit">
                   Créer mon compte
                 </Button>
                 <Button

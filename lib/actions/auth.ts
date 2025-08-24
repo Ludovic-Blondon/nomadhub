@@ -7,44 +7,56 @@ export type LoginState = {
   ok: boolean;
   message?: string;
   fieldErrors?: Partial<Record<"email" | "password", string | string[]>>;
-  values?: Partial<Record<"email", string>>;
+  values?: Partial<Record<"email", string>>; // ⚠️ pas de password ici
+};
+
+export type SignUpState = {
+  ok: boolean;
+  message?: string;
+  fieldErrors?: Partial<
+    Record<
+      "name" | "email" | "password" | "confirmPassword" | "terms",
+      string | string[]
+    >
+  >;
+  // on ne renvoie jamais les mots de passe pour des raisons de sécurité
+  values?: Partial<Record<"name" | "email" | "terms", string | boolean>>;
 };
 
 export async function signIn(
   _prevState: LoginState,
-  formData: FormData
+  formData: FormData,
 ): Promise<LoginState> {
-  const email = (formData.get("email") || "").toString();
-  const password = (formData.get("password") || "").toString();
+  const email = String(formData.get("email") ?? "").trim();
+  const password = String(formData.get("password") ?? "");
 
-  // Basic guard (optionnel)
-  if (!email) {
-    // Tu peux retourner une valeur pour useFormState si tu veux afficher l'erreur.
-    // Ici on redirige simplement:
+  // Toujours renvoyer les valeurs non sensibles
+  const values: LoginState["values"] = { email };
+  const fieldErrors: LoginState["fieldErrors"] = {};
+
+  if (!email) fieldErrors.email = "Email is required";
+  if (!password) fieldErrors.password = "Password is required";
+
+  // Erreurs de validation → pas de redirect, on renvoie l'état + values
+  if (Object.keys(fieldErrors).length) {
     return {
       ok: false,
-      message: "Email is required",
-      fieldErrors: {
-        email: "Email is required",
-      },
-      values: {
-        email: email,
-      },
-    };
-  }
-  if (!password) {
-    return {
-      ok: false,
-      message: "Password is required",
-      fieldErrors: {
-        password: "Password is required",
-      },
-      values: {},
+      message: "Champs manquants",
+      fieldErrors,
+      values,
     };
   }
 
-  // Déclenche l’auth Credentials (gérée par NextAuth v5)
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  // Exemple NextAuth v5 (credentials) sans redirection auto :
+  // const res = await authSignIn('credentials', { redirect: false, email, password })
+  // if (res?.error) {
+  //   return { ok: false, message: 'Identifiants incorrects', values }
+  // }
+
+  // Si OK → redirection explicite (seulement en succès)
+  // redirect('/dashboard')
+  // (placeholder de démo)
+  await new Promise((resolve) => setTimeout(resolve, 400));
   redirect("/");
 }
 
@@ -54,20 +66,47 @@ export async function googleSignIn() {
   redirect("/");
 }
 
-export async function signUp(formData: FormData) {
-  const name = (formData.get("name") || "").toString();
-  const email = (formData.get("email") || "").toString();
-  const password = (formData.get("password") || "").toString();
-  const confirmPassword = (formData.get("confirmPassword") || "").toString();
+export async function signUp(
+  _prev: SignUpState,
+  formData: FormData,
+): Promise<SignUpState> {
+  "use server";
+  const name = String(formData.get("name") ?? "").trim();
+  const email = String(formData.get("email") ?? "").trim();
+  const password = String(formData.get("password") ?? "");
+  const confirmPassword = String(formData.get("confirmPassword") ?? "");
+  const terms = !!formData.get("terms");
 
-  if (!name || !email || !password || !confirmPassword) {
-    redirect("/sign-up?error=missing-fields");
+  const values = { name, email, terms }; // ⬅️ toujours renvoyé dans les erreurs
+  const fieldErrors: SignUpState["fieldErrors"] = {};
+
+  if (!name) fieldErrors.name = "Name is required";
+  if (!email) fieldErrors.email = "Email is required";
+  if (!password) fieldErrors.password = "Password is required";
+  if (!confirmPassword)
+    fieldErrors.confirmPassword = "Confirm password is required";
+  if (!terms) fieldErrors.terms = "You must accept the terms";
+
+  if (Object.keys(fieldErrors).length) {
+    return { ok: false, message: "Champs manquants", fieldErrors, values };
   }
 
   if (password !== confirmPassword) {
-    redirect("/sign-up?error=password-mismatch");
+    return {
+      ok: false,
+      message: "Les mots de passe ne correspondent pas",
+      fieldErrors: {
+        password: "Password mismatch",
+        confirmPassword: "Password mismatch",
+      },
+      values, // ⬅️ garde nom/email/terms
+    };
   }
 
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  redirect("/");
+  // … création utilisateur + try/catch
+  // en cas d’erreur serveur, renvoyer aussi { ok:false, message:'…', values }
+  // ex:
+  // try { ...; redirect('/') } catch { return { ok:false, message:'Inscription impossible', values } }
+
+  redirect("/"); // ⬅️ seulement en succès
 }
