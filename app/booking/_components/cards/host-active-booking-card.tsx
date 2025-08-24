@@ -2,38 +2,20 @@
 
 import type { Booking } from "@/types";
 
-import React, { useState, useTransition } from "react";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  MapPin,
-  Calendar,
-  Star,
-  User,
-  Euro,
-  ArrowRight,
-  Check,
-  X,
-  Ban,
-} from "lucide-react";
+import { MapPin, Calendar, Star, User, Euro, ArrowRight } from "lucide-react";
 
 import { StatusBadge } from "../status-badge";
 import { eurFmt, formatDate } from "../utils";
+import AcceptBookingDialog from "../dialogs/accept-booking-dialog";
+import CancelBookingDialog from "../dialogs/cancel-booking-dialog";
+import RefuseBookingDialog from "../dialogs/refuse-booking-dialog";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 
 /**
  * 📌 HostActiveBookingCard — version "classe & minimaliste"
@@ -60,36 +42,12 @@ function nightsBetween(start: string, end: string) {
   return Math.ceil(diff / (1000 * 60 * 60 * 24));
 }
 
-export function HostActiveBookingCard({
-  booking,
-  onAccept,
-  onDecline,
-  onCancel,
-}: HostActiveBookingCardProps) {
+export function HostActiveBookingCard({ booking }: HostActiveBookingCardProps) {
   const nights = nightsBetween(booking.startDate, booking.endDate);
   const total = booking.bargain.price * nights;
 
-  const [isPending, startTransition] = useTransition();
-  const [localStatus, setLocalStatus] = useState<Booking["status"]>(
-    booking.status,
-  );
-
-  const canAcceptDecline = localStatus === "pending";
-  const canCancel = localStatus === "confirmed";
-
-  const run = (fn?: (id: Booking["id"]) => Promise<void>) => () => {
-    if (!fn) return;
-    startTransition(async () => {
-      try {
-        await fn(booking.id);
-        if (fn === onAccept) setLocalStatus("confirmed");
-        if (fn === onDecline) setLocalStatus("declined" as Booking["status"]);
-        if (fn === onCancel) setLocalStatus("cancelled");
-      } catch {
-        // TODO: toaster d'erreur shadcn
-      }
-    });
-  };
+  const canAcceptDecline = booking.status === "pending";
+  const canCancel = booking.status === "confirmed";
 
   return (
     <Card className="group overflow-hidden rounded-2xl border bg-card/60 backdrop-blur supports-[backdrop-filter]:bg-card/50 shadow-sm transition-shadow duration-200 hover:shadow-[0_8px_30px_hsl(var(--border)/0.25)] p-0">
@@ -165,7 +123,7 @@ export function HostActiveBookingCard({
               </div>
 
               <div className="flex items-center gap-2">
-                <StatusBadge status={localStatus} />
+                <StatusBadge status={booking.status} />
               </div>
             </div>
 
@@ -224,109 +182,16 @@ export function HostActiveBookingCard({
 
               {canAcceptDecline && (
                 <div className="flex flex-1 gap-2">
-                  <ConfirmButton
-                    actionLabel="Accepter"
-                    description="Le séjour passera au statut confirmé et l'invité sera notifié."
-                    icon={<Check className="h-4 w-4" />}
-                    intent="confirm"
-                    loading={isPending}
-                    title="Accepter la réservation ?"
-                    onConfirm={run(onAccept)}
-                  />
-
-                  <ConfirmButton
-                    actionLabel="Refuser"
-                    description="La demande sera refusée et l'invité sera notifié."
-                    icon={<X className="h-4 w-4" />}
-                    intent="danger-outline"
-                    loading={isPending}
-                    title="Refuser la réservation ?"
-                    onConfirm={run(onDecline)}
-                  />
+                  <AcceptBookingDialog booking={booking} />
+                  <RefuseBookingDialog booking={booking} />
                 </div>
               )}
 
-              {canCancel && (
-                <ConfirmButton
-                  actionLabel="Annuler"
-                  description="Cette action annulera la réservation confirmée. Des pénalités peuvent s'appliquer selon vos conditions."
-                  icon={<Ban className="h-4 w-4" />}
-                  intent="danger-outline"
-                  loading={isPending}
-                  title="Annuler en tant qu'hôte ?"
-                  onConfirm={run(onCancel)}
-                />
-              )}
+              {canCancel && <CancelBookingDialog booking={booking} />}
             </div>
           </div>
         </div>
       </CardContent>
     </Card>
-  );
-}
-
-// --- Minimal confirm button + alert dialog ----------------------------------
-
-type ConfirmButtonProps = {
-  title: string;
-  description: string;
-  actionLabel: string;
-  onConfirm?: () => void;
-  loading?: boolean;
-  icon?: React.ReactNode;
-  /**
-   * intent:
-   * - "confirm" -> bouton primaire sobre
-   * - "danger-outline" -> bouton ghost/outline destructif minimal
-   */
-  intent?: "confirm" | "danger-outline";
-};
-
-function ConfirmButton({
-  title,
-  description,
-  actionLabel,
-  onConfirm,
-  loading,
-  icon,
-  intent = "confirm",
-}: ConfirmButtonProps) {
-  const triggerClasses =
-    intent === "confirm"
-      ? "rounded-xl shadow-none hover:shadow-sm"
-      : "rounded-xl border border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive focus-visible:ring-destructive/50";
-
-  const triggerVariant = intent === "confirm" ? "default" : "ghost";
-
-  return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button
-          className={`flex-1 ${triggerClasses}`}
-          disabled={loading}
-          variant={triggerVariant as any}
-        >
-          {icon}
-          <span className={icon ? "ml-2" : ""}>{actionLabel}</span>
-        </Button>
-      </AlertDialogTrigger>
-
-      <AlertDialogContent className="rounded-xl border-border/60">
-        <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>{description}</AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel className="rounded-lg">Annuler</AlertDialogCancel>
-          <AlertDialogAction
-            className="rounded-lg"
-            disabled={loading}
-            onClick={onConfirm}
-          >
-            {actionLabel}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
   );
 }

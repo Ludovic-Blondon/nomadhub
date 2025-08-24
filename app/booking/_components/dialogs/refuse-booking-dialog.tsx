@@ -3,6 +3,7 @@
 import type { Booking } from "@/types";
 
 import { useState } from "react";
+import { X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,10 +15,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type CancelBookingState = "pending" | "loading" | "cancelled";
 
-export default function CancelBookingDialog({ booking }: { booking: Booking }) {
+export default function RefuseBookingDialog({ booking }: { booking: Booking }) {
   const [bookingState, setBookingState] =
     useState<CancelBookingState>("pending");
   const [isOpen, setIsOpen] = useState(false);
@@ -38,18 +40,18 @@ export default function CancelBookingDialog({ booking }: { booking: Booking }) {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
-          aria-label="Annuler la réservation"
           className="flex-1 rounded-xl border border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive focus-visible:ring-destructive/50"
           variant="ghost"
         >
-          Annuler
+          <X className="h-4 w-4" />
+          <span className="ml-2">Refuser</span>
         </Button>
       </DialogTrigger>
 
       <DialogContent className="w-full p-0 max-w-[100vw] sm:max-w-md h-[100svh] sm:h-auto rounded-none sm:rounded-lg overflow-hidden">
         <DialogHeader className="px-6 py-4 border-b border-border/50">
           <DialogTitle className="text-lg font-medium">
-            Annuler la réservation
+            Refuser la réservation
           </DialogTitle>
         </DialogHeader>
 
@@ -57,18 +59,28 @@ export default function CancelBookingDialog({ booking }: { booking: Booking }) {
           {bookingState === "pending" && (
             <div className="space-y-6">
               <div className="space-y-3">
+                <div>
+                  <div className="flex flex-row gap-2 items-center justify-between">
+                    <div className="text-sm text-muted-foreground font-medium min-w-0 flex-shrink-0">
+                      Invité:
+                    </div>
+                    <div className="flex flex-row gap-2 items-center">
+                      <div className="text-sm font-medium">
+                        {booking.guest.name}
+                      </div>
+                      <Avatar>
+                        <AvatarImage src={booking.guest.avatarUrl} />
+                        <AvatarFallback>CN</AvatarFallback>
+                      </Avatar>
+                    </div>
+                  </div>
+                </div>
                 <InfoRow
                   label="Période"
                   value={`${booking.startDate} → ${booking.endDate}`}
                 />
                 <InfoRow label="Offre" value={booking.bargain.title} />
                 <InfoRow label="Ville" value={booking.bargain.city} />
-              </div>
-              <div className="p-4 bg-destructive/5 border border-destructive/20 rounded-md">
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Cette action est irréversible. La réservation sera
-                  définitivement annulée.
-                </p>
               </div>
             </div>
           )}
@@ -77,7 +89,7 @@ export default function CancelBookingDialog({ booking }: { booking: Booking }) {
             <div className="flex flex-col items-center justify-center py-12 space-y-4">
               <div className="h-8 w-8 rounded-full border-2 border-muted border-t-foreground animate-spin" />
               <p className="text-sm text-muted-foreground">
-                Annulation en cours…
+                Traitement en cours…
               </p>
             </div>
           )}
@@ -99,7 +111,7 @@ export default function CancelBookingDialog({ booking }: { booking: Booking }) {
                   />
                 </svg>
               </div>
-              <p className="text-sm font-medium">Réservation annulée</p>
+              <p className="text-sm font-medium">Réservation refusée</p>
             </div>
           )}
         </div>
@@ -110,7 +122,7 @@ export default function CancelBookingDialog({ booking }: { booking: Booking }) {
               <>
                 <DialogClose asChild>
                   <Button className="w-full sm:w-auto" variant="outline">
-                    Annuler
+                    Retour
                   </Button>
                 </DialogClose>
                 <Button
@@ -118,7 +130,7 @@ export default function CancelBookingDialog({ booking }: { booking: Booking }) {
                   variant="destructive"
                   onClick={handleSubmit}
                 >
-                  Confirmer
+                  Refuser
                 </Button>
               </>
             )}
@@ -138,7 +150,13 @@ export default function CancelBookingDialog({ booking }: { booking: Booking }) {
   );
 }
 
-function InfoRow({ label, value }: { label: string; value?: string | number }) {
+function InfoRow({
+  label,
+  value,
+}: {
+  label: string;
+  value?: string | number | React.ReactNode;
+}) {
   return (
     <div className="flex justify-between items-start gap-4 py-2">
       <span className="text-sm text-muted-foreground font-medium min-w-0 flex-shrink-0">
