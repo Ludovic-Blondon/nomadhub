@@ -159,6 +159,7 @@ export const Navbar = ({ user }: { user: UserFull }) => {
           {user ? (
             <NavbarMenuItem>
               <Link
+                color="danger"
                 size="lg"
                 onPress={() => {
                   removeUser();
@@ -171,6 +172,7 @@ export const Navbar = ({ user }: { user: UserFull }) => {
           ) : (
             <NavbarMenuItem>
               <Link
+                color="foreground"
                 href="/sign-in"
                 size="lg"
                 onPress={() => setIsMenuOpen(false)}
