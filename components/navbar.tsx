@@ -156,6 +156,29 @@ export const Navbar = ({ user }: { user: UserFull }) => {
               </Link>
             </NavbarMenuItem>
           ))}
+          {user ? (
+            <NavbarMenuItem>
+              <Link
+                size="lg"
+                onPress={() => {
+                  removeUser();
+                  setIsMenuOpen(false);
+                }}
+              >
+                Déconnexion
+              </Link>
+            </NavbarMenuItem>
+          ) : (
+            <NavbarMenuItem>
+              <Link
+                href="/sign-in"
+                size="lg"
+                onPress={() => setIsMenuOpen(false)}
+              >
+                Connexion
+              </Link>
+            </NavbarMenuItem>
+          )}
         </div>
       </NavbarMenu>
     </HeroUINavbar>
