@@ -23,8 +23,10 @@ import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { HeartFilledIcon, SearchIcon, Logo } from "@/components/icons";
 import { poppins } from "@/app/fonts";
+import { removeUser } from "@/lib/cookies";
+import { UserFull } from "@/types";
 
-export const Navbar = () => {
+export const Navbar = ({ user }: { user: UserFull }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const currentPath = usePathname();
   const normalizePath = (path?: string) => {
@@ -116,6 +118,18 @@ export const Navbar = () => {
           >
             Faire un don
           </Button>
+        </NavbarItem>
+
+        <NavbarItem className="hidden md:flex">
+          {user ? (
+            <Button as={Link} onPress={removeUser}>
+              Logout
+            </Button>
+          ) : (
+            <Button as={Link} href="/sign-in">
+              Connexion
+            </Button>
+          )}
         </NavbarItem>
       </NavbarContent>
 

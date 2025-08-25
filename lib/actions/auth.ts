@@ -3,6 +3,8 @@
 
 import { redirect } from "next/navigation";
 
+import { setUser } from "../cookies";
+
 export type LoginState = {
   ok: boolean;
   message?: string;
@@ -15,12 +17,19 @@ export type SignUpState = {
   message?: string;
   fieldErrors?: Partial<
     Record<
-      "name" | "email" | "password" | "confirmPassword" | "terms",
+      | "firstname"
+      | "lastname"
+      | "email"
+      | "password"
+      | "confirmPassword"
+      | "terms",
       string | string[]
     >
   >;
   // on ne renvoie jamais les mots de passe pour des raisons de sécurité
-  values?: Partial<Record<"name" | "email" | "terms", string | boolean>>;
+  values?: Partial<
+    Record<"firstname" | "lastname" | "email" | "terms", string | boolean>
+  >;
 };
 
 export async function signIn(
@@ -57,6 +66,12 @@ export async function signIn(
   // redirect('/dashboard')
   // (placeholder de démo)
   await new Promise((resolve) => setTimeout(resolve, 400));
+  await setUser({
+    firstname: "John",
+    lastname: "Doe",
+    email,
+    avatarUrl: "https://github.com/shadcn.png",
+  });
   redirect("/");
 }
 
@@ -71,21 +86,23 @@ export async function signUp(
   formData: FormData,
 ): Promise<SignUpState> {
   "use server";
-  const name = String(formData.get("name") ?? "").trim();
+  const firstname = String(formData.get("firstname") ?? "").trim();
+  const lastname = String(formData.get("lastname") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const confirmPassword = String(formData.get("confirmPassword") ?? "");
   const terms = !!formData.get("terms");
 
-  const values = { name, email, terms }; // ⬅️ toujours renvoyé dans les erreurs
+  const values = { firstname, lastname, email, terms }; // ⬅️ toujours renvoyé dans les erreurs
   const fieldErrors: SignUpState["fieldErrors"] = {};
 
-  if (!name) fieldErrors.name = "Name is required";
-  if (!email) fieldErrors.email = "Email is required";
-  if (!password) fieldErrors.password = "Password is required";
-  if (!confirmPassword)
-    fieldErrors.confirmPassword = "Confirm password is required";
-  if (!terms) fieldErrors.terms = "You must accept the terms";
+  if (!firstname) fieldErrors.firstname = "Prénom est requis";
+  if (!lastname) fieldErrors.lastname = "Nom est requis";
+  if (!email) fieldErrors.email = "Email est requis";
+  if (!password) fieldErrors.password = "Mot de passe est requis";
+  if (!confirmPassword) fieldErrors.confirmPassword = "Mot de passe est requis";
+  if (!terms)
+    fieldErrors.terms = "Vous devez accepter les conditions d'utilisation";
 
   if (Object.keys(fieldErrors).length) {
     return { ok: false, message: "Champs manquants", fieldErrors, values };
@@ -95,10 +112,7 @@ export async function signUp(
     return {
       ok: false,
       message: "Les mots de passe ne correspondent pas",
-      fieldErrors: {
-        password: "Password mismatch",
-        confirmPassword: "Password mismatch",
-      },
+      fieldErrors: {},
       values, // ⬅️ garde nom/email/terms
     };
   }
@@ -108,5 +122,12 @@ export async function signUp(
   // ex:
   // try { ...; redirect('/') } catch { return { ok:false, message:'Inscription impossible', values } }
 
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await setUser({
+    firstname,
+    lastname,
+    email,
+    avatarUrl: "https://github.com/shadcn.png",
+  });
   redirect("/"); // ⬅️ seulement en succès
 }

@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { signUp, googleSignIn, SignUpState } from "@/lib/actions/auth"; // ⬅️ à implémenter côté serveur
 
 export default function SignUpForm({
@@ -44,20 +44,40 @@ export default function SignUpForm({
           {state?.message && (
             <Alert aria-live="polite" className="mb-4" variant="destructive">
               <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{state.message}</AlertDescription>
+              <AlertTitle>{state.message}</AlertTitle>
+              <AlertDescription>
+                {Object.entries(state.fieldErrors ?? {})
+                  .filter(([_, value]) => value)
+                  .map(([key, value]) => (
+                    <p key={key}>{value}</p>
+                  ))}
+              </AlertDescription>
             </Alert>
           )}
 
           <form noValidate action={formAction}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
-                <Label htmlFor="name">Nom complet</Label>
+                <Label htmlFor="firstname">Prénom</Label>
                 <Input
-                  aria-invalid={!!state?.fieldErrors?.name}
+                  aria-invalid={!!state?.fieldErrors?.firstname}
                   autoComplete="name"
-                  defaultValue={(state.values?.name as string) ?? ""}
-                  id="name"
-                  name="name"
+                  defaultValue={(state.values?.firstname as string) ?? ""}
+                  id="firstname"
+                  name="firstname"
+                  placeholder="John"
+                  type="text"
+                />
+              </div>
+
+              <div className="grid gap-3">
+                <Label htmlFor="lastname">Nom</Label>
+                <Input
+                  aria-invalid={!!state?.fieldErrors?.lastname}
+                  autoComplete="name"
+                  defaultValue={(state.values?.lastname as string) ?? ""}
+                  id="lastname"
+                  name="lastname"
                   placeholder="Ada Lovelace"
                   type="text"
                 />
