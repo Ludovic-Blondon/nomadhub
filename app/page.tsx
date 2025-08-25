@@ -1,4 +1,4 @@
-import HomeCard from "@/app/ui/home-card";
+import HomeCard from "@/app/_components/home-card";
 
 export default function Home() {
   const list = [

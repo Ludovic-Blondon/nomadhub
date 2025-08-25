@@ -1,4 +1,4 @@
-import { StarRating } from "./star-rating";
+import { StarRating } from "../../../_common/star-rating";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bargain } from "@/types";
