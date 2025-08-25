@@ -1,4 +1,11 @@
+import { Metadata } from "next";
+
 import { LoginForm } from "./_components/login-form";
+
+export const metadata: Metadata = {
+  title: "Connexion",
+  description: "Connectez-vous à votre compte NomadHub",
+};
 
 export default function Page() {
   return (

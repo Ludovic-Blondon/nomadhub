@@ -1,4 +1,11 @@
+import { Metadata } from "next";
+
 import SignUpForm from "./_components/sign-up-form";
+
+export const metadata: Metadata = {
+  title: "Inscription",
+  description: "Créez votre compte NomadHub",
+};
 
 export default function Page() {
   return (
