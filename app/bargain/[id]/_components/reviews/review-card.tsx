@@ -1,6 +1,6 @@
 "use client";
 
-import { StarRating } from "../star-rating";
+import { StarRating } from "../../../../_common/star-rating";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

@@ -56,7 +56,7 @@ export default function AboutPage() {
               size="lg"
               variant="outline"
             >
-              <Link href="/signup">Rejoindre la communauté</Link>
+              <Link href="/sign-up">Rejoindre la communauté</Link>
             </Button>
           </div>
 
