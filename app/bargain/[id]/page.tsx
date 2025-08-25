@@ -1,11 +1,11 @@
 import { MapPin } from "lucide-react";
 import { Metadata } from "next";
 
-import Breadcrumb from "@/app/ui/breadcrumb";
-import { Caroussel } from "@/app/ui/caroussel";
-import OwnerPreview from "@/app/ui/owner-preview";
-import ReviewsList from "@/app/ui/reviews/reviews-list";
-import { BookingDialog } from "@/app/ui/booking-dialog";
+import Breadcrumb from "@/app/_common/breadcrumb";
+import { Caroussel } from "@/app/bargain/[id]/_components/caroussel";
+import OwnerPreview from "@/app/bargain/[id]/_components/owner-preview";
+import ReviewsList from "@/app/bargain/[id]/_components/reviews/reviews-list";
+import { BookingDialog } from "@/app/bargain/[id]/_components/booking-dialog";
 
 export const metadata: Metadata = {
   title: "Annonce",
