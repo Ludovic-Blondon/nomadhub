@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <section className="w-full">
+    <section className="w-full flex items-center justify-center">
       <div className="container max-w-3xl px-4 py-24">
         <div className="text-center space-y-6">
           <h1 className="text-4xl md:text-5xl font-semibold tracking-tight">

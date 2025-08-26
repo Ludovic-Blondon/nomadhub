@@ -1,7 +1,6 @@
 import { MapPin } from "lucide-react";
 import { Metadata } from "next";
 
-import Breadcrumb from "@/app/_common/breadcrumb";
 import { Caroussel } from "@/app/bargain/[id]/_components/caroussel";
 import OwnerPreview from "@/app/bargain/[id]/_components/owner-preview";
 import ReviewsList from "@/app/bargain/[id]/_components/reviews/reviews-list";
@@ -60,8 +59,6 @@ export default async function Bargain({
 
   return (
     <div className="flex flex-col gap-4 space-y-4">
-      <Breadcrumb id={bargain.id.toString()} />
-
       <div className="space-y-4">
         <div className="justify-center flex items-center">
           <Caroussel bargain={bargain} />
