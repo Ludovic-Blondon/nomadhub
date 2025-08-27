@@ -41,8 +41,8 @@ const bargain = {
   },
 };
 
-export async function getRoomById(id: number): Promise<Bargain> {
-  await sleep(1000);
+export async function getBargainById(id: number): Promise<Bargain> {
+  await sleep(300);
 
   return { id, ...bargain };
 }

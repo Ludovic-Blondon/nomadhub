@@ -5,7 +5,7 @@ import { Caroussel } from "@/app/bargain/[id]/_components/caroussel";
 import OwnerPreview from "@/app/bargain/[id]/_components/owner-preview";
 import ReviewsList from "@/app/bargain/[id]/_components/reviews/reviews-list";
 import { BookingDialog } from "@/app/bargain/[id]/_components/booking-dialog";
-import { getRoomById } from "@/lib/repositories/rooms";
+import { getBargainById } from "@/lib/repositories/bargains";
 
 export const metadata: Metadata = {
   title: "Annonce",
@@ -18,7 +18,7 @@ export default async function Bargain({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const bargain = await getRoomById(Number(id));
+  const bargain = await getBargainById(Number(id));
 
   return (
     <div className="flex flex-col gap-4 space-y-4">
