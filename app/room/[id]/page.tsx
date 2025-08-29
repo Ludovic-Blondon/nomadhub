@@ -5,7 +5,7 @@ import { Caroussel } from "@/app/room/[id]/_components/caroussel";
 import OwnerPreview from "@/app/room/[id]/_components/owner-preview";
 import ReviewsList from "@/app/room/[id]/_components/reviews/reviews-list";
 import { BookingDialog } from "@/app/room/[id]/_components/booking-dialog";
-import { getRoomById } from "@/lib/repositories/bargains";
+import { getRoomById } from "@/lib/repositories/room";
 
 export const metadata: Metadata = {
   title: "Annonce",
