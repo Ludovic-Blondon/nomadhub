@@ -1,7 +1,7 @@
 import type { Booking } from "@/types";
 import type { Role, Scope } from "@/app/booking/type";
 
-import { guestBookings, hostBookings } from "@/mock/reservations";
+import { guestBookings, hostBookings } from "@/mock/bookings";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
