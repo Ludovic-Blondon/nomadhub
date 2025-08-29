@@ -15,10 +15,10 @@ export function PastBookingCard({ booking }: { booking: Booking }) {
           <div className="relative w-16 h-16 flex-shrink-0 overflow-hidden rounded-md bg-muted">
             <Image
               fill
-              alt={booking.bargain.title}
+              alt={booking.room.title}
               className="object-cover"
               sizes="64px"
-              src={booking.bargain.images[0]}
+              src={booking.room.images[0]}
             />
           </div>
           {/* Infos + Status centré verticalement */}
@@ -26,9 +26,9 @@ export function PastBookingCard({ booking }: { booking: Booking }) {
             <div className="min-w-0">
               <h3
                 className="text-sm font-medium truncate"
-                title={booking.bargain.title}
+                title={booking.room.title}
               >
-                {booking.bargain.title}
+                {booking.room.title}
               </h3>
               <p className="text-xs text-muted-foreground mt-0.5">
                 {formatDate(booking.startDate)} – {formatDate(booking.endDate)}

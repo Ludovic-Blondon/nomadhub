@@ -12,16 +12,16 @@ import {
 } from "@/components/ui/carousel";
 import { Room } from "@/types";
 
-export function Caroussel({ bargain }: { bargain: Room }) {
+export function Caroussel({ room }: { room: Room }) {
   return (
     <Carousel className="w-full max-w-xl h-full">
       <CarouselContent>
-        {bargain.images.map((image, index) => (
+        {room.images.map((image, index) => (
           <CarouselItem key={index}>
             <div className="p-1 w-full h-full flex items-center justify-center">
               <div className="relative w-full h-full">
                 <Image
-                  alt={`${bargain.title} - ${bargain.city} - ${bargain.neighborhood}`}
+                  alt={`${room.title} - ${room.city} - ${room.neighborhood}`}
                   className="object-contain"
                   src={image}
                   width={1000}

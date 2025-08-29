@@ -6,7 +6,7 @@ export const guestBookings: Booking[] = [
     status: "pending",
     startDate: "2025-08-20",
     endDate: "2025-08-22",
-    bargain: {
+    room: {
       id: 1,
       title: "Magnifique canapé lit chez William - Salon",
       city: "Paris",
@@ -51,7 +51,7 @@ export const guestBookings: Booking[] = [
     status: "confirmed",
     startDate: "2025-08-28",
     endDate: "2025-08-30",
-    bargain: {
+    room: {
       id: 2,
       title: "Studio cozy au cœur de Montmartre",
       city: "Paris",
@@ -76,7 +76,7 @@ export const guestBookings: Booking[] = [
     status: "cancelled",
     startDate: "2024-11-20",
     endDate: "2024-11-22",
-    bargain: {
+    room: {
       id: 3,
       title: "Appartement moderne près de la gare",
       city: "Lyon",
@@ -101,7 +101,7 @@ export const guestBookings: Booking[] = [
     status: "completed",
     startDate: "2024-12-01",
     endDate: "2024-12-02",
-    bargain: {
+    room: {
       id: 4,
       title: "Magnifique canapé lit chez William - Salon",
       city: "Paris",
@@ -126,7 +126,7 @@ export const guestBookings: Booking[] = [
     status: "rejected",
     startDate: "2024-12-01",
     endDate: "2024-12-02",
-    bargain: {
+    room: {
       id: 4,
       title: "Magnifique canapé lit chez Jean - Salon",
       city: "Lyon",
@@ -154,7 +154,7 @@ export const hostBookings: Booking[] = [
     status: "pending",
     startDate: "2025-09-10",
     endDate: "2025-09-12",
-    bargain: {
+    room: {
       id: 42,
       title: "Loft lumineux Canal Saint-Martin",
       city: "Paris",
@@ -179,7 +179,7 @@ export const hostBookings: Booking[] = [
     status: "rejected",
     startDate: "2025-09-10",
     endDate: "2025-09-12",
-    bargain: {
+    room: {
       id: 43,
       title: "T2 design proche Bellecour",
       city: "Lyon",
@@ -203,7 +203,7 @@ export const hostBookings: Booking[] = [
     status: "confirmed",
     startDate: "2025-09-18",
     endDate: "2025-09-20",
-    bargain: {
+    room: {
       id: 45,
       title: "T2 design proche Bellecour",
       city: "Lyon",
@@ -228,7 +228,7 @@ export const hostBookings: Booking[] = [
     status: "completed",
     startDate: "2025-05-02",
     endDate: "2025-05-05",
-    bargain: {
+    room: {
       id: 44,
       title: "Studio cosy Vieux-Lille",
       city: "Lille",

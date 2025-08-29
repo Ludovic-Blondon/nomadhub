@@ -3,7 +3,7 @@ import { Room } from "@/types";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-const bargain = {
+const room = {
   title: "Magnifique canapé lit chez William - Salon",
   city: "Paris",
   neighborhood: "1er arrondissement",
@@ -41,8 +41,8 @@ const bargain = {
   },
 };
 
-export async function getBargainById(id: number): Promise<Room> {
+export async function getRoomById(id: number): Promise<Room> {
   await sleep(300);
 
-  return { id, ...bargain };
+  return { id, ...room };
 }

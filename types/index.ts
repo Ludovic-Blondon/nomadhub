@@ -64,6 +64,6 @@ export type Booking = {
   status: BookingStatus;
   startDate: string; // YYYY-MM-DD
   endDate: string; // YYYY-MM-DD
-  bargain: Room;
+  room: Room;
   guest: User;
 };

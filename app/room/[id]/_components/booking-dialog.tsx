@@ -51,10 +51,10 @@ function useMediaQuery(query: string) {
 type BookingState = "selecting" | "loading" | "confirmed";
 
 type BookingDialogProps = {
-  bargain: Room;
+  room: Room;
 };
 
-export function BookingDialog({ bargain }: BookingDialogProps) {
+export function BookingDialog({ room }: BookingDialogProps) {
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [error, setError] = useState<string | null>(null);
   const [bookingState, setBookingState] = useState<BookingState>("selecting");
@@ -111,7 +111,7 @@ export function BookingDialog({ bargain }: BookingDialogProps) {
   };
 
   const nights = calculateNights();
-  const estimatedTotal = nights * bargain.price;
+  const estimatedTotal = nights * room.price;
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -123,7 +123,7 @@ export function BookingDialog({ bargain }: BookingDialogProps) {
         <div className="flex-shrink-0 border-b bg-background p-4 sm:p-6 sm:pb-4">
           <DialogHeader className="space-y-1">
             <DialogTitle className="text-base sm:text-xl">
-              {bargain.title} à {bargain.city}
+              {room.title} à {room.city}
             </DialogTitle>
             <DialogDescription>
               {bookingState === "selecting" &&
@@ -231,7 +231,7 @@ export function BookingDialog({ bargain }: BookingDialogProps) {
                       className="h-4 w-4 text-muted-foreground"
                     />
                     <span>
-                      {bargain.title} à {bargain.city}
+                      {room.title} à {room.city}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
