@@ -3,16 +3,9 @@ import { Metadata } from "next";
 
 import { ReservationList } from "./_components/reservation-list";
 import FiltersClient from "./_components/filters-client";
+import { coerceRole, coerceScope, defaults } from "./utils";
 
-import {
-  getGuestBookings,
-  getHostBookings,
-  filterActive,
-  filterPast,
-  coerceRole,
-  coerceScope,
-  defaults,
-} from "@/lib/repositories/booking";
+import { getBookings } from "@/lib/repositories/booking";
 
 export const metadata: Metadata = {
   title: "Réservations",
@@ -29,16 +22,13 @@ export default async function Page({
   const role = coerceRole(sp.role ?? defaults.role);
   const scope = coerceScope(sp.scope ?? defaults.scope);
 
-  const all =
-    role === "guest" ? await getGuestBookings() : await getHostBookings();
-
-  const activeList = filterActive(all);
-  const pastList = filterPast(all);
+  const activeList = await getBookings(role, "active");
+  const pastList = await getBookings(role, "past");
 
   const activeCount = activeList.length;
   const pastCount = pastList.length;
 
-  const list = scope === "active" ? filterActive(all) : filterPast(all);
+  const list = scope === "active" ? activeList : pastList;
 
   return (
     <div className="container mx-auto max-w-6xl px-4 pb-8">
