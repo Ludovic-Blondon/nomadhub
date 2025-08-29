@@ -1,9 +1,9 @@
 import { StarRating } from "../../../_common/star-rating";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bargain } from "@/types";
+import { Room } from "@/types";
 
-export default function OwnerPreview({ bargain }: { bargain: Bargain }) {
+export default function OwnerPreview({ bargain }: { bargain: Room }) {
   return (
     <div className="flex justify-between flex-row gap-2">
       <div className="flex flex-row gap-2">

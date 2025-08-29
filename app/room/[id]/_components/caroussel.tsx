@@ -10,9 +10,9 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Bargain } from "@/types";
+import { Room } from "@/types";
 
-export function Caroussel({ bargain }: { bargain: Bargain }) {
+export function Caroussel({ bargain }: { bargain: Room }) {
   return (
     <Carousel className="w-full max-w-xl h-full">
       <CarouselContent>

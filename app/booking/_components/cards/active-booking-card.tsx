@@ -61,7 +61,7 @@ export function ActiveBookingCard({ booking }: { booking: Booking }) {
                 <Link
                   aria-label={`Voir l'annonce ${booking.bargain.title}`}
                   className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 rounded-md"
-                  href={`/bargain/${booking.bargain.id}`}
+                  href={`/room/${booking.bargain.id}`}
                 >
                   <h3 className="text-lg font-semibold tracking-tight text-card-foreground line-clamp-2 hover:text-primary transition-colors">
                     {booking.bargain.title}
@@ -156,7 +156,7 @@ export function ActiveBookingCard({ booking }: { booking: Booking }) {
 
             {/* Actions */}
             <div className="mt-5 flex flex-col sm:flex-row gap-2">
-              <Link className="flex-1" href={`/bargain/${booking.bargain.id}`}>
+              <Link className="flex-1" href={`/room/${booking.bargain.id}`}>
                 <Button
                   aria-label="Voir les détails de l'annonce"
                   className="w-full justify-center rounded-xl border-border/70 shadow-none hover:shadow-sm"

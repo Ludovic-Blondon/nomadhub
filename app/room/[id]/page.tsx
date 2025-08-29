@@ -1,10 +1,10 @@
 import { MapPin } from "lucide-react";
 import { Metadata } from "next";
 
-import { Caroussel } from "@/app/bargain/[id]/_components/caroussel";
-import OwnerPreview from "@/app/bargain/[id]/_components/owner-preview";
-import ReviewsList from "@/app/bargain/[id]/_components/reviews/reviews-list";
-import { BookingDialog } from "@/app/bargain/[id]/_components/booking-dialog";
+import { Caroussel } from "@/app/room/[id]/_components/caroussel";
+import OwnerPreview from "@/app/room/[id]/_components/owner-preview";
+import ReviewsList from "@/app/room/[id]/_components/reviews/reviews-list";
+import { BookingDialog } from "@/app/room/[id]/_components/booking-dialog";
 import { getBargainById } from "@/lib/repositories/bargains";
 
 export const metadata: Metadata = {
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description: "Découvrez l'annonce de votre réservation.",
 };
 
-export default async function Bargain({
+export default async function Room({
   params,
 }: {
   params: Promise<{ id: string }>;

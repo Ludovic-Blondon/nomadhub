@@ -1,5 +1,5 @@
 import "server-only";
-import { Bargain } from "@/types";
+import { Room } from "@/types";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -41,7 +41,7 @@ const bargain = {
   },
 };
 
-export async function getBargainById(id: number): Promise<Bargain> {
+export async function getBargainById(id: number): Promise<Room> {
   await sleep(300);
 
   return { id, ...bargain };

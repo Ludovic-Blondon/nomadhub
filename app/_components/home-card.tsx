@@ -2,16 +2,16 @@
 import { Card, CardBody, CardFooter, Image, Link } from "@heroui/react";
 import { ArrowUpRight } from "lucide-react";
 
-import { BargainLight } from "@/types";
+import { RoomLight } from "@/types";
 
-export default function HomeCard({ item }: { item: BargainLight }) {
+export default function HomeCard({ item }: { item: RoomLight }) {
   return (
     <Card
       key={item.id}
       isPressable
       as={Link}
       className="group"
-      href={`/bargain/${item.id}`}
+      href={`/room/${item.id}`}
       shadow="sm"
     >
       <CardBody className="p-0">

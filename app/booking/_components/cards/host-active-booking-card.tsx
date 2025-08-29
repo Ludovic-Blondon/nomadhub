@@ -72,7 +72,7 @@ export function HostActiveBookingCard({ booking }: HostActiveBookingCardProps) {
                 <Link
                   aria-label={`Voir l'annonce ${booking.bargain.title}`}
                   className="block rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
-                  href={`/bargain/${booking.bargain.id}`}
+                  href={`/room/${booking.bargain.id}`}
                 >
                   <h3 className="line-clamp-2 text-lg font-semibold tracking-tight text-card-foreground transition-colors hover:text-primary">
                     {booking.bargain.title}
@@ -169,7 +169,7 @@ export function HostActiveBookingCard({ booking }: HostActiveBookingCardProps) {
 
             {/* Actions */}
             <div className="mt-5 flex flex-col gap-2 sm:flex-row">
-              <Link className="flex-1" href={`/bargain/${booking.bargain.id}`}>
+              <Link className="flex-1" href={`/room/${booking.bargain.id}`}>
                 <Button
                   aria-label="Voir les détails de l'annonce"
                   className="w-full justify-center rounded-xl border-border/70 shadow-none hover:shadow-sm"
