@@ -3,7 +3,7 @@ import type { Booking } from "@/types";
 type Role = "guest" | "host";
 type Scope = "active" | "past";
 
-import { guestBookings, hostBookings } from "@/lib/reservation.seed";
+import { guestBookings, hostBookings } from "@/mock/reservations";
 
 export const defaults = { role: "guest" as Role, scope: "active" as Scope };
 

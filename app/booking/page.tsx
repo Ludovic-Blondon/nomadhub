@@ -3,7 +3,6 @@ import { Metadata } from "next";
 
 import { ReservationList } from "./_components/reservation-list";
 import FiltersClient from "./_components/filters-client";
-import { refreshReservations } from "./actions";
 
 import {
   getGuestBookings,
@@ -13,8 +12,7 @@ import {
   coerceRole,
   coerceScope,
   defaults,
-} from "@/lib/reservations";
-import { getPreference } from "@/lib/cookies";
+} from "@/lib/repositories/booking";
 
 export const metadata: Metadata = {
   title: "Réservations",
@@ -28,11 +26,8 @@ export default async function Page({
 }) {
   const sp = await searchParams;
 
-  // Optionnel: fallback cookie si tu veux respecter la "mémoire"
-  const pref = await getPreference(); // { role?, scope? } — si tu as implémenté
-
-  const role = coerceRole(sp.role ?? pref.role ?? defaults.role);
-  const scope = coerceScope(sp.scope ?? pref.scope ?? defaults.scope);
+  const role = coerceRole(sp.role ?? defaults.role);
+  const scope = coerceScope(sp.scope ?? defaults.scope);
 
   const all =
     role === "guest" ? await getGuestBookings() : await getHostBookings();
@@ -56,12 +51,6 @@ export default async function Page({
             Côté voyageur et côté hôte, en un seul endroit.
           </p>
         </div>
-
-        <form action={refreshReservations}>
-          <button className="inline-flex rounded-md border px-3 py-1.5 text-sm">
-            Actualiser
-          </button>
-        </form>
       </div>
 
       <FiltersClient
