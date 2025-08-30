@@ -79,8 +79,8 @@ export default function RefuseBookingDialog({ booking }: { booking: Booking }) {
                   label="Période"
                   value={`${booking.startDate} → ${booking.endDate}`}
                 />
-                <InfoRow label="Offre" value={booking.bargain.title} />
-                <InfoRow label="Ville" value={booking.bargain.city} />
+                <InfoRow label="Offre" value={booking.room.title} />
+                <InfoRow label="Ville" value={booking.room.city} />
               </div>
             </div>
           )}

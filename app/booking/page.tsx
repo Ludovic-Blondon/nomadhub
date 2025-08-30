@@ -3,18 +3,9 @@ import { Metadata } from "next";
 
 import { ReservationList } from "./_components/reservation-list";
 import FiltersClient from "./_components/filters-client";
-import { refreshReservations } from "./actions";
+import { coerceRole, coerceScope, defaults } from "./utils";
 
-import {
-  getGuestBookings,
-  getHostBookings,
-  filterActive,
-  filterPast,
-  coerceRole,
-  coerceScope,
-  defaults,
-} from "@/lib/reservations";
-import { getPreference } from "@/lib/cookies";
+import { getBookings } from "@/lib/repositories/booking";
 
 export const metadata: Metadata = {
   title: "Réservations",
@@ -28,25 +19,19 @@ export default async function Page({
 }) {
   const sp = await searchParams;
 
-  // Optionnel: fallback cookie si tu veux respecter la "mémoire"
-  const pref = await getPreference(); // { role?, scope? } — si tu as implémenté
+  const role = coerceRole(sp.role ?? defaults.role);
+  const scope = coerceScope(sp.scope ?? defaults.scope);
 
-  const role = coerceRole(sp.role ?? pref.role ?? defaults.role);
-  const scope = coerceScope(sp.scope ?? pref.scope ?? defaults.scope);
-
-  const all =
-    role === "guest" ? await getGuestBookings() : await getHostBookings();
-
-  const activeList = filterActive(all);
-  const pastList = filterPast(all);
+  const activeList = await getBookings(role, "active");
+  const pastList = await getBookings(role, "past");
 
   const activeCount = activeList.length;
   const pastCount = pastList.length;
 
-  const list = scope === "active" ? filterActive(all) : filterPast(all);
+  const list = scope === "active" ? activeList : pastList;
 
   return (
-    <div className="container mx-auto max-w-6xl px-4 py-8">
+    <div className="container mx-auto max-w-6xl px-4 pb-8">
       <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">
@@ -56,12 +41,6 @@ export default async function Page({
             Côté voyageur et côté hôte, en un seul endroit.
           </p>
         </div>
-
-        <form action={refreshReservations}>
-          <button className="inline-flex rounded-md border px-3 py-1.5 text-sm">
-            Actualiser
-          </button>
-        </form>
       </div>
 
       <FiltersClient

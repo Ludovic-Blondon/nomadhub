@@ -44,7 +44,7 @@ function nightsBetween(start: string, end: string) {
 
 export function HostActiveBookingCard({ booking }: HostActiveBookingCardProps) {
   const nights = nightsBetween(booking.startDate, booking.endDate);
-  const total = booking.bargain.price * nights;
+  const total = booking.room.price * nights;
 
   const canAcceptDecline = booking.status === "pending";
   const canCancel = booking.status === "confirmed";
@@ -57,11 +57,11 @@ export function HostActiveBookingCard({ booking }: HostActiveBookingCardProps) {
           <div className="relative w-full lg:w-80 aspect-[16/10] lg:aspect-auto lg:h-auto flex-shrink-0">
             <Image
               fill
-              alt={booking.bargain.title}
+              alt={booking.room.title}
               className="object-cover w-full h-full transition-transform duration-300 will-change-transform group-hover:scale-[1.02]"
               priority={false}
               sizes="(max-width: 1024px) 100vw, 320px"
-              src={booking.bargain.images[0]}
+              src={booking.room.images[0]}
             />
           </div>
 
@@ -70,12 +70,12 @@ export function HostActiveBookingCard({ booking }: HostActiveBookingCardProps) {
             <div className="mb-3 flex items-start justify-between gap-4">
               <div className="min-w-0 flex-1">
                 <Link
-                  aria-label={`Voir l'annonce ${booking.bargain.title}`}
+                  aria-label={`Voir l'annonce ${booking.room.title}`}
                   className="block rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
-                  href={`/bargain/${booking.bargain.id}`}
+                  href={`/room/${booking.room.id}`}
                 >
                   <h3 className="line-clamp-2 text-lg font-semibold tracking-tight text-card-foreground transition-colors hover:text-primary">
-                    {booking.bargain.title}
+                    {booking.room.title}
                   </h3>
                 </Link>
 
@@ -83,20 +83,20 @@ export function HostActiveBookingCard({ booking }: HostActiveBookingCardProps) {
                   <div className="inline-flex items-center gap-1.5">
                     <MapPin aria-hidden="true" className="h-4 w-4" />
                     <span>
-                      {booking.bargain.city}
-                      {booking.bargain.neighborhood
-                        ? `, ${booking.bargain.neighborhood}`
+                      {booking.room.city}
+                      {booking.room.neighborhood
+                        ? `, ${booking.room.neighborhood}`
                         : ""}
                     </span>
                   </div>
-                  {booking.bargain.rating ? (
+                  {booking.room.rating ? (
                     <div className="inline-flex items-center gap-1.5">
                       <Star
                         aria-hidden="true"
                         className="h-4 w-4 fill-current"
                       />
                       <span className="tabular-nums font-medium">
-                        {booking.bargain.rating}
+                        {booking.room.rating}
                       </span>
                     </div>
                   ) : null}
@@ -161,7 +161,7 @@ export function HostActiveBookingCard({ booking }: HostActiveBookingCardProps) {
                     {eurFmt.format(total)}
                   </p>
                   <p className="mt-0.5 text-xs text-muted-foreground">
-                    {eurFmt.format(booking.bargain.price)} / nuit
+                    {eurFmt.format(booking.room.price)} / nuit
                   </p>
                 </div>
               </div>
@@ -169,7 +169,7 @@ export function HostActiveBookingCard({ booking }: HostActiveBookingCardProps) {
 
             {/* Actions */}
             <div className="mt-5 flex flex-col gap-2 sm:flex-row">
-              <Link className="flex-1" href={`/bargain/${booking.bargain.id}`}>
+              <Link className="flex-1" href={`/room/${booking.room.id}`}>
                 <Button
                   aria-label="Voir les détails de l'annonce"
                   className="w-full justify-center rounded-xl border-border/70 shadow-none hover:shadow-sm"

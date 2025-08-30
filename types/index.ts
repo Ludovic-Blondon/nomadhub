@@ -4,7 +4,7 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
-export type Bargain = {
+export type Room = {
   id: number;
   title: string;
   description: string;
@@ -17,7 +17,7 @@ export type Bargain = {
   author: User;
 };
 
-export type BargainLight = {
+export type RoomLight = {
   id: number;
   city: string;
   neighborhood: string;
@@ -64,6 +64,6 @@ export type Booking = {
   status: BookingStatus;
   startDate: string; // YYYY-MM-DD
   endDate: string; // YYYY-MM-DD
-  bargain: Bargain;
+  room: Room;
   guest: User;
 };
