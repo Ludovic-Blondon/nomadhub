@@ -8,6 +8,7 @@ export async function getRoomById(id: number): Promise<Room> {
   await sleep(300);
 
   const room = rooms.find((room) => room.id === id);
+
   if (!room) {
     throw new Error("Room not found");
   }

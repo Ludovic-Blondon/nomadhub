@@ -68,7 +68,7 @@ export function BookingDialog({ room }: BookingDialogProps) {
   const startOfToday = new Date(
     today.getFullYear(),
     today.getMonth(),
-    today.getDate()
+    today.getDate(),
   );
   const disabledDays = { before: startOfToday } as const;
 
@@ -82,7 +82,7 @@ export function BookingDialog({ room }: BookingDialogProps) {
   const calculateNights = () => {
     if (!dateRange?.from || !dateRange?.to) return 0;
     const diffTime = Math.abs(
-      dateRange.to.getTime() - dateRange.from.getTime()
+      dateRange.to.getTime() - dateRange.from.getTime(),
     );
 
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));

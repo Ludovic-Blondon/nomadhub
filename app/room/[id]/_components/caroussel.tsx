@@ -23,9 +23,9 @@ export function Caroussel({ room }: { room: Room }) {
                 <Image
                   alt={`${room.title} - ${room.city} - ${room.neighborhood}`}
                   className="object-contain"
+                  removeWrapper={true}
                   src={image}
                   width={1000}
-                  removeWrapper={true}
                 />
               </div>
             </div>
