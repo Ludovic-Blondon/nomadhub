@@ -63,8 +63,8 @@ export default function CancelBookingDialog({ booking }: { booking: Booking }) {
                   label="Période"
                   value={`${booking.startDate} → ${booking.endDate}`}
                 />
-                <InfoRow label="Offre" value={booking.bargain.title} />
-                <InfoRow label="Ville" value={booking.bargain.city} />
+                <InfoRow label="Offre" value={booking.room.title} />
+                <InfoRow label="Ville" value={booking.room.city} />
               </div>
               <div className="p-4 bg-destructive/5 border border-destructive/20 rounded-md">
                 <p className="text-sm text-muted-foreground leading-relaxed">

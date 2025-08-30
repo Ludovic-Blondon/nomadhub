@@ -33,11 +33,11 @@ function nightsBetween(start: string, end: string) {
  */
 export function ActiveBookingCard({ booking }: { booking: Booking }) {
   const nights = nightsBetween(booking.startDate, booking.endDate);
-  const total = booking.bargain.price * nights;
+  const total = booking.room.price * nights;
 
   return (
     <Card
-      aria-label={`Réservation pour ${booking.bargain.title}`}
+      aria-label={`Réservation pour ${booking.room.title}`}
       className="group p-0 overflow-hidden rounded-2xl border bg-card/60 backdrop-blur supports-[backdrop-filter]:bg-card/50 shadow-sm transition-shadow duration-200 hover:shadow-[0_8px_30px_hsl(var(--border)/0.25)]"
     >
       <CardContent className="p-0">
@@ -46,11 +46,11 @@ export function ActiveBookingCard({ booking }: { booking: Booking }) {
           <div className="relative w-full lg:w-80 aspect-[16/10] lg:aspect-auto lg:h-auto flex-shrink-0">
             <Image
               fill
-              alt={booking.bargain.title}
+              alt={booking.room.title}
               className="object-cover w-full h-full transition-transform duration-300 will-change-transform group-hover:scale-[1.02]"
               priority={false}
               sizes="(max-width: 1024px) 100vw, 320px"
-              src={booking.bargain.images[0]}
+              src={booking.room.images[0]}
             />
           </div>
 
@@ -59,12 +59,12 @@ export function ActiveBookingCard({ booking }: { booking: Booking }) {
             <div className="flex items-start justify-between gap-4 mb-3">
               <div className="flex-1 min-w-0">
                 <Link
-                  aria-label={`Voir l'annonce ${booking.bargain.title}`}
+                  aria-label={`Voir l'annonce ${booking.room.title}`}
                   className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 rounded-md"
-                  href={`/bargain/${booking.bargain.id}`}
+                  href={`/room/${booking.room.id}`}
                 >
                   <h3 className="text-lg font-semibold tracking-tight text-card-foreground line-clamp-2 hover:text-primary transition-colors">
-                    {booking.bargain.title}
+                    {booking.room.title}
                   </h3>
                 </Link>
 
@@ -72,21 +72,21 @@ export function ActiveBookingCard({ booking }: { booking: Booking }) {
                   <div className="inline-flex items-center gap-1.5">
                     <MapPin aria-hidden="true" className="h-4 w-4" />
                     <span>
-                      {booking.bargain.city}
-                      {booking.bargain.neighborhood
-                        ? `, ${booking.bargain.neighborhood}`
+                      {booking.room.city}
+                      {booking.room.neighborhood
+                        ? `, ${booking.room.neighborhood}`
                         : ""}
                     </span>
                   </div>
 
-                  {booking.bargain.rating ? (
+                  {booking.room.rating ? (
                     <div className="inline-flex items-center gap-1.5">
                       <Star
                         aria-hidden="true"
                         className="h-4 w-4 fill-current"
                       />
                       <span className="font-medium tabular-nums">
-                        {booking.bargain.rating}
+                        {booking.room.rating}
                       </span>
                     </div>
                   ) : null}
@@ -95,8 +95,8 @@ export function ActiveBookingCard({ booking }: { booking: Booking }) {
                 <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
                   <Avatar className="h-6 w-6 ring-1 ring-border/60">
                     <AvatarImage
-                      alt={booking.bargain.author.name}
-                      src={booking.bargain.author.avatarUrl}
+                      alt={booking.room.author.name}
+                      src={booking.room.author.avatarUrl}
                     />
                     <AvatarFallback>
                       <User aria-hidden="true" className="h-3 w-3" />
@@ -105,7 +105,7 @@ export function ActiveBookingCard({ booking }: { booking: Booking }) {
                   <span>
                     Hébergé par{" "}
                     <span className="font-medium text-foreground/90">
-                      {booking.bargain.author.name}
+                      {booking.room.author.name}
                     </span>
                   </span>
                 </div>
@@ -148,7 +148,7 @@ export function ActiveBookingCard({ booking }: { booking: Booking }) {
                     {eurFmt.format(total)}
                   </p>
                   <p className="mt-0.5 text-xs text-muted-foreground">
-                    {eurFmt.format(booking.bargain.price)} / nuit
+                    {eurFmt.format(booking.room.price)} / nuit
                   </p>
                 </div>
               </div>
@@ -156,7 +156,7 @@ export function ActiveBookingCard({ booking }: { booking: Booking }) {
 
             {/* Actions */}
             <div className="mt-5 flex flex-col sm:flex-row gap-2">
-              <Link className="flex-1" href={`/bargain/${booking.bargain.id}`}>
+              <Link className="flex-1" href={`/room/${booking.room.id}`}>
                 <Button
                   aria-label="Voir les détails de l'annonce"
                   className="w-full justify-center rounded-xl border-border/70 shadow-none hover:shadow-sm"

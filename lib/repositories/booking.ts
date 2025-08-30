@@ -1,24 +1,27 @@
 import type { Booking } from "@/types";
+import type { Role, Scope } from "@/app/booking/type";
 
-type Role = "guest" | "host";
-type Scope = "active" | "past";
+import { guestBookings, hostBookings } from "@/mock/bookings";
 
-import { guestBookings, hostBookings } from "@/lib/reservation.seed";
-
-export const defaults = { role: "guest" as Role, scope: "active" as Scope };
-
-export function coerceRole(v?: string): Role {
-  return v === "host" ? "host" : "guest";
-}
-export function coerceScope(v?: string): Scope {
-  return v === "past" ? "past" : "active";
-}
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export async function getGuestBookings(): Promise<Booking[]> {
   return guestBookings;
 }
 export async function getHostBookings(): Promise<Booking[]> {
   return hostBookings;
+}
+
+export async function getBookings(role: Role, scope: Scope) {
+  await sleep(100);
+
+  const all = role === "host" ? hostBookings : guestBookings;
+
+  if (scope === "active") {
+    return filterActive(all);
+  }
+
+  return filterPast(all);
 }
 
 export function filterActive(all: Booking[]) {
