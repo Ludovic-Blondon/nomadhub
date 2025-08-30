@@ -2,9 +2,9 @@
 import { Card, CardBody, CardFooter, Image, Link } from "@heroui/react";
 import { ArrowUpRight } from "lucide-react";
 
-import { RoomLight } from "@/types";
+import { Room } from "@/types";
 
-export default function HomeCard({ item }: { item: RoomLight }) {
+export default function HomeCard({ item }: { item: Room }) {
   return (
     <Card
       key={item.id}
@@ -21,7 +21,7 @@ export default function HomeCard({ item }: { item: RoomLight }) {
             className="w-full object-cover h-[140px]"
             radius="lg"
             shadow="sm"
-            src={item.img}
+            src={item.images[0]}
             width="100%"
           />
           <span
@@ -35,7 +35,7 @@ export default function HomeCard({ item }: { item: RoomLight }) {
                   group-hover:scale-100 group-hover:opacity-100
                 "
           >
-            {item.price}
+            {item.price} €
           </span>
         </div>
       </CardBody>
