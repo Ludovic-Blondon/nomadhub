@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Devenir hôte",
-  description: "Accueillez des voyageurs quand vous le souhaitez.",
+  description:
+    "Accueillez des voyageurs quand vous le souhaitez avec un système de dons volontaires.",
 };
 
 export default function BecomeHost() {
@@ -19,12 +20,20 @@ export default function BecomeHost() {
 
           <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
             Accueillez des voyageurs quand vous le souhaitez. Vous fixez les
-            règles. Gratuit, simple et sûr.
+            règles, les disponibilités et pouvez suggérer un don de remerciement
+            dans votre annonce. L'hébergement reste gratuit, le don volontaire.
+          </p>
+
+          <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
+            Simple, sûr et basé sur l'entraide. Vous gardez le contrôle total
+            sur vos disponibilités et vos conditions d'accueil. L'hôte peut
+            mentionner un montant suggéré pour le don, mais celui-ci reste
+            entièrement à la discrétion de l'invité.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <Button asChild className="w-full sm:w-auto" size="lg">
-              <Link href="/signup">Créer une annonce</Link>
+              <Link href="/sign-up">Créer une annonce</Link>
             </Button>
             <Button
               asChild
@@ -37,7 +46,7 @@ export default function BecomeHost() {
           </div>
 
           <p className="text-sm text-muted-foreground pt-4">
-            Pas de frais. Don de remerciement optionnel.
+            Pas de frais. Don de remerciement optionnel et volontaire.
           </p>
         </div>
       </div>

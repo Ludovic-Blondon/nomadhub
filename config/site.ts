@@ -10,20 +10,16 @@ export const siteConfig = {
       href: "/",
     },
     {
-      label: "Réservation",
+      label: "Réservations",
       href: "/booking",
     },
     {
-      label: "Comment ça marche ?",
-      href: "/how-it-works",
+      label: "Informations",
+      href: "/info",
     },
     {
       label: "Devenir hôte",
       href: "/become-host",
-    },
-    {
-      label: "A propos",
-      href: "/about",
     },
   ],
   navMenuItems: [
@@ -32,20 +28,16 @@ export const siteConfig = {
       href: "/",
     },
     {
-      label: "Réservation",
+      label: "Réservations",
       href: "/booking",
     },
     {
-      label: "Comment ça marche ?",
-      href: "/how-it-works",
+      label: "Informations",
+      href: "/info",
     },
     {
       label: "Devenir hôte",
       href: "/become-host",
-    },
-    {
-      label: "A propos",
-      href: "/about",
     },
     {
       label: "Soutenir",
