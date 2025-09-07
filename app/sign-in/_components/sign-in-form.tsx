@@ -2,7 +2,10 @@
 
 import Link from "next/link";
 import { AlertCircle } from "lucide-react";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+
+import { handleSignInSubmit, initialState } from "./sign-in-action";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -15,20 +18,25 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signIn, googleSignIn, LoginState } from "@/lib/actions/auth"; // ⬅️
+import { googleSignIn } from "@/lib/actions/auth"; // ⬅️
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-export function LoginForm({
+export function SignInForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const initialState: LoginState = {
-    ok: false,
-    message: undefined,
-    fieldErrors: {},
-    values: {},
-  };
-  const [state, formAction, pending] = useActionState(signIn, initialState);
+  const [state, formAction, pending] = useActionState(
+    handleSignInSubmit,
+    initialState,
+  );
+  const router = useRouter();
+
+  // Redirection après succès
+  useEffect(() => {
+    if (state.ok) {
+      router.push("/");
+    }
+  }, [state.ok, router]);
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -40,7 +48,7 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {state?.message && (
+          {!state.ok && state?.message && (
             <Alert className="mb-4" variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>{state.message}</AlertDescription>
