@@ -8,7 +8,6 @@ import { Providers } from "./providers";
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
-import { getUser } from "@/lib/cookies";
 
 export const metadata: Metadata = {
   title: {
@@ -33,20 +32,18 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getUser();
-
   return (
     <html suppressHydrationWarning lang="fr">
       <head />
       <body
         className={clsx(
           "min-h-screen text-foreground bg-background font-sans antialiased",
-          fontSans.variable,
+          fontSans.variable
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           <div className="relative flex flex-col h-screen overflow-auto">
-            <Navbar user={user} />
+            <Navbar />
             <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
               {children}
             </main>

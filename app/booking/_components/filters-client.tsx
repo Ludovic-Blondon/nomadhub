@@ -21,7 +21,7 @@ export default function FiltersClient({
   const sp = useSearchParams();
 
   function hrefFor(next: Partial<{ role: string; scope: string }>) {
-    const q = new URLSearchParams(sp.toString());
+    const q = new URLSearchParams(sp?.toString());
 
     q.set("role", (next.role ?? role) as string);
     q.set("scope", (next.scope ?? scope) as string);
