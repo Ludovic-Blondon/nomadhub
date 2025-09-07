@@ -20,7 +20,7 @@ export const initialState: SignInState = {
 // ✅ Fonction côté client (pas de "use server")
 export async function handleSignInSubmit(
   prevState: SignInState,
-  formData: FormData
+  formData: FormData,
 ): Promise<SignInState> {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
