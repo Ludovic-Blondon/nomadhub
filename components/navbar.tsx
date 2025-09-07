@@ -23,13 +23,13 @@ import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { HeartFilledIcon, SearchIcon, Logo } from "@/components/icons";
 import { poppins } from "@/app/fonts";
-import { removeUser } from "@/lib/cookies";
-import { UserFull } from "@/types";
+import { authClient } from "@/lib/auth-client";
 
-export const Navbar = ({ user }: { user: UserFull }) => {
+export const Navbar = () => {
+  const session = authClient.useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const currentPath = usePathname();
-  const normalizePath = (path?: string) => {
+  const normalizePath = (path?: string | null) => {
     if (!path) return "/";
 
     const base = path.split("?")[0].split("#")[0];
@@ -121,8 +121,8 @@ export const Navbar = ({ user }: { user: UserFull }) => {
         </NavbarItem>
 
         <NavbarItem className="hidden md:flex">
-          {user ? (
-            <Button as={Link} onPress={removeUser}>
+          {session.data?.user ? (
+            <Button as={Link} onPress={() => authClient.signOut()}>
               Logout
             </Button>
           ) : (
@@ -156,13 +156,13 @@ export const Navbar = ({ user }: { user: UserFull }) => {
               </Link>
             </NavbarMenuItem>
           ))}
-          {user ? (
+          {session.data?.user ? (
             <NavbarMenuItem>
               <Link
                 color="danger"
                 size="lg"
                 onPress={() => {
-                  removeUser();
+                  authClient.signOut();
                   setIsMenuOpen(false);
                 }}
               >

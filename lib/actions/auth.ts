@@ -4,6 +4,7 @@
 import { redirect } from "next/navigation";
 
 import { setUser } from "../cookies";
+import { auth } from "../auth";
 
 export type LoginState = {
   ok: boolean;
@@ -85,7 +86,6 @@ export async function signUp(
   _prev: SignUpState,
   formData: FormData,
 ): Promise<SignUpState> {
-  "use server";
   const firstname = String(formData.get("firstname") ?? "").trim();
   const lastname = String(formData.get("lastname") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
@@ -93,9 +93,10 @@ export async function signUp(
   const confirmPassword = String(formData.get("confirmPassword") ?? "");
   const terms = !!formData.get("terms");
 
-  const values = { firstname, lastname, email, terms }; // ⬅️ toujours renvoyé dans les erreurs
+  const values = { firstname, lastname, email, terms };
   const fieldErrors: SignUpState["fieldErrors"] = {};
 
+  // Vos validations...
   if (!firstname) fieldErrors.firstname = "Prénom est requis";
   if (!lastname) fieldErrors.lastname = "Nom est requis";
   if (!email) fieldErrors.email = "Email est requis";
@@ -113,21 +114,46 @@ export async function signUp(
       ok: false,
       message: "Les mots de passe ne correspondent pas",
       fieldErrors: {},
-      values, // ⬅️ garde nom/email/terms
+      values,
     };
   }
 
-  // … création utilisateur + try/catch
-  // en cas d’erreur serveur, renvoyer aussi { ok:false, message:'…', values }
-  // ex:
-  // try { ...; redirect('/') } catch { return { ok:false, message:'Inscription impossible', values } }
+  try {
+    const result = await auth.api.signUpEmail({
+      body: {
+        email,
+        password,
+        name: `${firstname} ${lastname}`,
+        image: "https://github.com/shadcn.png",
+      },
+    });
 
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  await setUser({
-    firstname,
-    lastname,
-    email,
-    avatarUrl: "https://github.com/shadcn.png",
-  });
-  redirect("/"); // ⬅️ seulement en succès
+    // ✅ Si succès, on sort du try/catch avant de redirect
+    if (result) {
+      // Le redirect doit être en dehors du try/catch
+      redirect("/");
+    }
+  } catch (error: any) {
+    console.error("Erreur lors de l'inscription:", error);
+
+    // ✅ Vérifier si c'est une erreur de redirect
+    if (error?.message === "NEXT_REDIRECT") {
+      throw error; // Re-lancer l'erreur de redirect
+    }
+
+    return {
+      ok: false,
+      message: error.message || "Erreur lors de la création du compte",
+      fieldErrors: {},
+      values,
+    };
+  }
+
+  // Cette ligne ne devrait jamais être atteinte
+  return {
+    ok: true,
+    message: "Compte créé avec succès",
+    fieldErrors: {},
+    values,
+  };
 }

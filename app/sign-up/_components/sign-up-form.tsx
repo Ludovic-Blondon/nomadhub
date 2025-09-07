@@ -2,7 +2,10 @@
 
 import Link from "next/link";
 import { AlertCircle } from "lucide-react";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+
+import { handleSignUpSubmit, initialState } from "./sign-up-action";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -16,19 +19,24 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { signUp, googleSignIn, SignUpState } from "@/lib/actions/auth"; // ⬅️ à implémenter côté serveur
+import { googleSignIn } from "@/lib/actions/auth";
 
 export default function SignUpForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const initialState: SignUpState = {
-    ok: false,
-    message: undefined,
-    fieldErrors: {},
-    values: {},
-  };
-  const [state, formAction, pending] = useActionState(signUp, initialState);
+  const [state, formAction, pending] = useActionState(
+    handleSignUpSubmit,
+    initialState,
+  );
+  const router = useRouter();
+
+  // Redirection après succès
+  useEffect(() => {
+    if (state.ok) {
+      router.push("/");
+    }
+  }, [state.ok, router]);
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -41,7 +49,7 @@ export default function SignUpForm({
         </CardHeader>
 
         <CardContent>
-          {state?.message && (
+          {!state.ok && state?.message && (
             <Alert aria-live="polite" className="mb-4" variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>{state.message}</AlertTitle>
