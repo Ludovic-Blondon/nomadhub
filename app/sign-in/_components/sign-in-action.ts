@@ -69,3 +69,24 @@ export async function handleSignInSubmit(
     };
   }
 }
+
+export async function googleSignIn() {
+  // OAuth Google: aucun formData nécessaire
+  const { error, data } = await authClient.signIn.social({
+    provider: "google",
+    callbackURL: "/",
+  });
+
+  if (error) {
+    return {
+      ok: false,
+      message: error.message ?? "Erreur lors de la connexion avec Google",
+    };
+  }
+
+  return {
+    ok: true,
+    message: "Connexion avec Google réussie",
+    data,
+  };
+}

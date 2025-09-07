@@ -5,7 +5,11 @@ import { AlertCircle } from "lucide-react";
 import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-import { handleSignUpSubmit, initialState } from "./sign-up-action";
+import {
+  handleSignUpSubmit,
+  initialState,
+  googleSignIn,
+} from "./sign-up-action";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -19,7 +23,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { googleSignIn } from "@/lib/actions/auth";
 
 export default function SignUpForm({
   className,
