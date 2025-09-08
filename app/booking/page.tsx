@@ -1,11 +1,14 @@
 import { Suspense } from "react";
 import { Metadata } from "next";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 import { ReservationList } from "./_components/reservation-list";
 import FiltersClient from "./_components/filters-client";
 import { coerceRole, coerceScope, defaults } from "./utils";
 
 import { getBookings } from "@/lib/repositories/booking";
+import { auth } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Réservations",
@@ -17,6 +20,13 @@ export default async function Page({
 }: {
   searchParams: Promise<{ role?: string; scope?: string }>;
 }) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    redirect("/sign-in");
+  }
   const sp = await searchParams;
 
   const role = coerceRole(sp.role ?? defaults.role);

@@ -17,7 +17,7 @@ import { link as linkStyles } from "@heroui/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
@@ -29,6 +29,8 @@ export const Navbar = () => {
   const { data: session, isPending } = authClient.useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const currentPath = usePathname();
+  const router = useRouter();
+
   const normalizePath = (path?: string | null) => {
     if (!path) return "/";
 
@@ -126,7 +128,18 @@ export const Navbar = () => {
               Chargement...
             </Button>
           ) : session?.user ? (
-            <Button as={Link} onPress={() => authClient.signOut()}>
+            <Button
+              as={Link}
+              onPress={() =>
+                authClient.signOut({
+                  fetchOptions: {
+                    onSuccess: () => {
+                      router.push("/");
+                    },
+                  },
+                })
+              }
+            >
               Logout
             </Button>
           ) : (
