@@ -1,3 +1,4 @@
+/** SERVER SIDE AUTH */
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
