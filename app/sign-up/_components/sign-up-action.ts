@@ -1,5 +1,5 @@
-// hooks/useSignUpAction.ts
 import { authClient } from "@/lib/auth-client";
+import { signUpSchema } from "@/lib/validations/auth";
 
 export type SignUpState = {
   ok: boolean;
@@ -20,51 +20,53 @@ export const initialState: SignUpState = {
   values: { firstname: "", lastname: "", email: "", terms: false },
 };
 
-// ✅ Fonction côté client (pas de "use server")
 export async function handleSignUpSubmit(
   prevState: SignUpState,
   formData: FormData,
 ): Promise<SignUpState> {
-  const firstname = String(formData.get("firstname") ?? "").trim();
-  const lastname = String(formData.get("lastname") ?? "").trim();
-  const email = String(formData.get("email") ?? "").trim();
-  const password = String(formData.get("password") ?? "");
-  const confirmPassword = String(formData.get("confirmPassword") ?? "");
-  const terms = !!formData.get("terms");
+  const rawData = {
+    firstname: String(formData.get("firstname") ?? "").trim(),
+    lastname: String(formData.get("lastname") ?? "").trim(),
+    email: String(formData.get("email") ?? "").trim(),
+    password: String(formData.get("password") ?? ""),
+    confirmPassword: String(formData.get("confirmPassword") ?? ""),
+    terms: !!formData.get("terms"),
+  };
 
-  const values = { firstname, lastname, email, terms };
-  const fieldErrors: Record<string, string> = {};
+  // Validation avec Zod
+  const result = signUpSchema.safeParse(rawData);
 
-  // Validations
-  if (!firstname) fieldErrors.firstname = "Prénom est requis";
-  if (!lastname) fieldErrors.lastname = "Nom est requis";
-  if (!email) fieldErrors.email = "Email est requis";
-  if (!password) fieldErrors.password = "Mot de passe est requis";
-  if (!confirmPassword) fieldErrors.confirmPassword = "Mot de passe est requis";
-  if (!terms)
-    fieldErrors.terms = "Vous devez accepter les conditions d'utilisation";
+  if (!result.success) {
+    const fieldErrors: Record<string, string> = {};
 
-  if (Object.keys(fieldErrors).length) {
-    return { ok: false, message: "Champs manquants", fieldErrors, values };
-  }
+    result.error.issues.forEach((issue) => {
+      const field = issue.path[0] as string;
 
-  if (password !== confirmPassword) {
+      fieldErrors[field] = issue.message;
+    });
+
     return {
       ok: false,
-      message: "Les mots de passe ne correspondent pas",
-      fieldErrors: {
-        confirmPassword: "Les mots de passe ne correspondent pas",
+      message: "Données invalides",
+      fieldErrors,
+      values: {
+        firstname: rawData.firstname,
+        lastname: rawData.lastname,
+        email: rawData.email,
+        terms: rawData.terms,
       },
-      values,
     };
   }
 
+  const { firstname, lastname, email, password } = result.data;
+  const values = { firstname, lastname, email, terms: true };
+
   try {
-    const { data, error } = await authClient.signUp.email({
+    const { error } = await authClient.signUp.email({
       email,
       password,
       name: `${firstname} ${lastname}`,
-      image: "https://github.com/shadcn.png",
+      image: `https://api.dicebear.com/7.x/initials/svg?seed=${firstname}+${lastname}`,
     });
 
     if (error) {
@@ -84,7 +86,7 @@ export async function handleSignUpSubmit(
       fieldErrors: {},
       values,
     };
-  } catch (_error: any) {
+  } catch {
     return {
       ok: false,
       message: "Erreur lors de la création du compte",
@@ -95,22 +97,50 @@ export async function handleSignUpSubmit(
 }
 
 export async function googleSignIn() {
-  // OAuth Google: aucun formData nécessaire
-  const { error, data } = await authClient.signIn.social({
-    provider: "google",
-    callbackURL: "/",
-  });
+  try {
+    const { error, data } = await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/",
+    });
 
-  if (error) {
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error("Erreur OAuth Google:", error);
+
+      return {
+        ok: false,
+        message: error.message ?? "Erreur lors de la connexion avec Google",
+        fieldErrors: { general: error.message ?? "Erreur OAuth" },
+        values: { firstname: "", lastname: "", email: "", terms: false },
+      };
+    }
+
+    return {
+      ok: true,
+      message: "Connexion avec Google réussie",
+      fieldErrors: {},
+      values: {
+        firstname:
+          "user" in data && data.user?.name
+            ? (data.user.name.split(" ")[0] ?? "")
+            : "",
+        lastname:
+          "user" in data && data.user?.name
+            ? (data.user.name.split(" ")[1] ?? "")
+            : "",
+        email: "user" in data && data.user ? (data.user.email ?? "") : "",
+        terms: true,
+      },
+    };
+  } catch (error: unknown) {
+    // eslint-disable-next-line no-console
+    console.error("Erreur OAuth Google inattendue:", error);
+
     return {
       ok: false,
-      message: error.message ?? "Erreur lors de la connexion avec Google",
+      message: "Erreur inattendue lors de la connexion avec Google",
+      fieldErrors: { general: "Erreur inattendue" },
+      values: { firstname: "", lastname: "", email: "", terms: false },
     };
   }
-
-  return {
-    ok: true,
-    message: "Connexion avec Google réussie",
-    data,
-  };
 }

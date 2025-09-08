@@ -26,7 +26,7 @@ import { poppins } from "@/app/fonts";
 import { authClient } from "@/lib/auth-client";
 
 export const Navbar = () => {
-  const session = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const currentPath = usePathname();
   const normalizePath = (path?: string | null) => {
@@ -121,7 +121,11 @@ export const Navbar = () => {
         </NavbarItem>
 
         <NavbarItem className="hidden md:flex">
-          {session.data?.user ? (
+          {isPending ? (
+            <Button disabled variant="ghost">
+              Chargement...
+            </Button>
+          ) : session?.user ? (
             <Button as={Link} onPress={() => authClient.signOut()}>
               Logout
             </Button>
@@ -156,7 +160,13 @@ export const Navbar = () => {
               </Link>
             </NavbarMenuItem>
           ))}
-          {session.data?.user ? (
+          {isPending ? (
+            <NavbarMenuItem>
+              <Link isDisabled color="foreground" size="lg">
+                Chargement...
+              </Link>
+            </NavbarMenuItem>
+          ) : session?.user ? (
             <NavbarMenuItem>
               <Link
                 color="danger"

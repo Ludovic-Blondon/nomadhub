@@ -1,5 +1,5 @@
-// hooks/useSignUpAction.ts
 import { authClient } from "@/lib/auth-client";
+import { signInSchema } from "@/lib/validations/auth";
 
 export type SignInState = {
   ok: boolean;
@@ -17,27 +17,40 @@ export const initialState: SignInState = {
   values: { email: "" },
 };
 
-// ✅ Fonction côté client (pas de "use server")
 export async function handleSignInSubmit(
   prevState: SignInState,
   formData: FormData,
 ): Promise<SignInState> {
-  const email = String(formData.get("email") ?? "").trim();
-  const password = String(formData.get("password") ?? "");
+  const rawData = {
+    email: String(formData.get("email") ?? "").trim(),
+    password: String(formData.get("password") ?? ""),
+  };
 
-  const values = { email };
-  const fieldErrors: Record<string, string> = {};
+  // Validation avec Zod
+  const result = signInSchema.safeParse(rawData);
 
-  // Validations
-  if (!email) fieldErrors.email = "Email est requis";
-  if (!password) fieldErrors.password = "Mot de passe est requis";
+  if (!result.success) {
+    const fieldErrors: Record<string, string> = {};
 
-  if (Object.keys(fieldErrors).length) {
-    return { ok: false, message: "Champs manquants", fieldErrors, values };
+    result.error.issues.forEach((issue) => {
+      const field = issue.path[0] as string;
+
+      fieldErrors[field] = issue.message;
+    });
+
+    return {
+      ok: false,
+      message: "Données invalides",
+      fieldErrors,
+      values: { email: rawData.email },
+    };
   }
 
+  const { email, password } = result.data;
+  const values = { email };
+
   try {
-    const { data, error } = await authClient.signIn.email({
+    const { error } = await authClient.signIn.email({
       email,
       password,
       callbackURL: "/",
@@ -60,7 +73,7 @@ export async function handleSignInSubmit(
       fieldErrors: {},
       values,
     };
-  } catch (_error: any) {
+  } catch {
     return {
       ok: false,
       message: "Erreur lors de la connexion du compte",
@@ -71,22 +84,41 @@ export async function handleSignInSubmit(
 }
 
 export async function googleSignIn() {
-  // OAuth Google: aucun formData nécessaire
-  const { error, data } = await authClient.signIn.social({
-    provider: "google",
-    callbackURL: "/",
-  });
+  try {
+    const { error, data } = await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/",
+    });
 
-  if (error) {
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error("Erreur OAuth Google:", error);
+
+      return {
+        ok: false,
+        message: error.message ?? "Erreur lors de la connexion avec Google",
+        fieldErrors: { general: error.message ?? "Erreur OAuth" },
+        values: { email: "" },
+      };
+    }
+
+    return {
+      ok: true,
+      message: "Connexion avec Google réussie",
+      fieldErrors: {},
+      values: {
+        email: "user" in data && data.user ? (data.user.email ?? "") : "",
+      },
+    };
+  } catch (error: unknown) {
+    // eslint-disable-next-line no-console
+    console.error("Erreur OAuth Google inattendue:", error);
+
     return {
       ok: false,
-      message: error.message ?? "Erreur lors de la connexion avec Google",
+      message: "Erreur inattendue lors de la connexion avec Google",
+      fieldErrors: { general: "Erreur inattendue" },
+      values: { email: "" },
     };
   }
-
-  return {
-    ok: true,
-    message: "Connexion avec Google réussie",
-    data,
-  };
 }

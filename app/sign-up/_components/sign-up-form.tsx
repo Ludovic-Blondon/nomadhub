@@ -24,7 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-export default function SignUpForm({
+export function SignUpForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
