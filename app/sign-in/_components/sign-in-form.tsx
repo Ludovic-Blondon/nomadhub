@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export function SignInForm({
   className,
@@ -52,9 +52,16 @@ export function SignInForm({
         </CardHeader>
         <CardContent>
           {!state.ok && state?.message && (
-            <Alert className="mb-4" variant="destructive">
+            <Alert aria-live="polite" className="mb-4" variant="destructive">
               <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{state.message}</AlertDescription>
+              <AlertTitle>{state.message}</AlertTitle>
+              <AlertDescription>
+                {Object.entries(state.fieldErrors ?? {})
+                  .filter(([_, value]) => value)
+                  .map(([key, value]) => (
+                    <p key={key}>{value}</p>
+                  ))}
+              </AlertDescription>
             </Alert>
           )}
           <form noValidate action={formAction}>

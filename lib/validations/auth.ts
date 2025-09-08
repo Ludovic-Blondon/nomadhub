@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const signInSchema = z.object({
-  email: z.string().min(1, "Email est requis").email("Email invalide"),
+  email: z.email({ message: "Email invalide" }),
   password: z
     .string()
     .min(1, "Mot de passe est requis")
@@ -20,7 +20,7 @@ export const signUpSchema = z
       .min(1, "Nom est requis")
       .min(2, "Le nom doit contenir au moins 2 caractères")
       .max(50, "Le nom ne peut pas dépasser 50 caractères"),
-    email: z.string().min(1, "Email est requis").email("Email invalide"),
+    email: z.email({ message: "Email invalide" }),
     password: z
       .string()
       .min(8, "Le mot de passe doit contenir au moins 8 caractères")
