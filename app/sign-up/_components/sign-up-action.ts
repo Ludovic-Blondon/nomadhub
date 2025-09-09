@@ -1,5 +1,6 @@
 import { authClient } from "@/lib/auth-client";
 import { signUpSchema } from "@/lib/validations/auth";
+import { googleSignIn as googleOAuth } from "@/lib/auth-utils";
 
 export type SignUpState = {
   ok: boolean;
@@ -97,50 +98,30 @@ export async function handleSignUpSubmit(
 }
 
 export async function googleSignIn() {
-  try {
-    const { error, data } = await authClient.signIn.social({
-      provider: "google",
-      callbackURL: "/",
-    });
+  const result = await googleOAuth();
 
-    if (error) {
-      // eslint-disable-next-line no-console
-      console.error("Erreur OAuth Google:", error);
-
-      return {
-        ok: false,
-        message: error.message ?? "Erreur lors de la connexion avec Google",
-        fieldErrors: { general: error.message ?? "Erreur OAuth" },
-        values: { firstname: "", lastname: "", email: "", terms: false },
-      };
-    }
-
-    return {
-      ok: true,
-      message: "Connexion avec Google réussie",
-      fieldErrors: {},
-      values: {
-        firstname:
-          "user" in data && data.user?.name
-            ? (data.user.name.split(" ")[0] ?? "")
-            : "",
-        lastname:
-          "user" in data && data.user?.name
-            ? (data.user.name.split(" ")[1] ?? "")
-            : "",
-        email: "user" in data && data.user ? (data.user.email ?? "") : "",
-        terms: true,
-      },
-    };
-  } catch (error: unknown) {
-    // eslint-disable-next-line no-console
-    console.error("Erreur OAuth Google inattendue:", error);
-
-    return {
-      ok: false,
-      message: "Erreur inattendue lors de la connexion avec Google",
-      fieldErrors: { general: "Erreur inattendue" },
-      values: { firstname: "", lastname: "", email: "", terms: false },
-    };
-  }
+  return {
+    ...result,
+    values: {
+      firstname:
+        result.ok &&
+        result.data &&
+        "user" in result.data &&
+        result.data.user?.name
+          ? (result.data.user.name.split(" ")[0] ?? "")
+          : "",
+      lastname:
+        result.ok &&
+        result.data &&
+        "user" in result.data &&
+        result.data.user?.name
+          ? (result.data.user.name.split(" ")[1] ?? "")
+          : "",
+      email:
+        result.ok && result.data && "user" in result.data && result.data.user
+          ? (result.data.user.email ?? "")
+          : "",
+      terms: result.ok,
+    },
+  };
 }

@@ -30,13 +30,6 @@ export type User = {
   avatarUrl?: string;
 };
 
-export type UserFull = {
-  firstname: string;
-  lastname: string;
-  email: string;
-  avatarUrl?: string;
-};
-
 export type StarRatingProps = {
   value: number;
   className?: string;

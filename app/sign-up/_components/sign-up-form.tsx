@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { AlertCircle } from "lucide-react";
-import { useActionState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useActionState } from "react";
 
 import {
   handleSignUpSubmit,
@@ -12,6 +11,7 @@ import {
 } from "./sign-up-action";
 
 import { cn } from "@/lib/utils";
+import { useAuthRedirect } from "@/hooks/use-auth-redirect";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -32,14 +32,8 @@ export function SignUpForm({
     handleSignUpSubmit,
     initialState,
   );
-  const router = useRouter();
 
-  // Redirection après succès
-  useEffect(() => {
-    if (state.ok) {
-      router.push("/");
-    }
-  }, [state.ok, router]);
+  useAuthRedirect(state.ok);
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -47,7 +41,7 @@ export function SignUpForm({
         <CardHeader>
           <CardTitle>Créer un compte</CardTitle>
           <CardDescription>
-            Renseigne tes informations pour commencer
+            Renseignez vos informations pour commencer
           </CardDescription>
         </CardHeader>
 
@@ -89,7 +83,7 @@ export function SignUpForm({
                   defaultValue={(state.values?.lastname as string) ?? ""}
                   id="lastname"
                   name="lastname"
-                  placeholder="Ada Lovelace"
+                  placeholder="Dupont"
                   type="text"
                 />
               </div>

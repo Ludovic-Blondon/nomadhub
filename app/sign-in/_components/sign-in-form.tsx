@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { AlertCircle } from "lucide-react";
-import { useActionState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useActionState } from "react";
 
 import {
   handleSignInSubmit,
@@ -12,6 +11,7 @@ import {
 } from "./sign-in-action";
 
 import { cn } from "@/lib/utils";
+import { useAuthRedirect } from "@/hooks/use-auth-redirect";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -32,14 +32,8 @@ export function SignInForm({
     handleSignInSubmit,
     initialState,
   );
-  const router = useRouter();
 
-  // Redirection après succès
-  useEffect(() => {
-    if (state.ok) {
-      router.push("/");
-    }
-  }, [state.ok, router]);
+  useAuthRedirect(state.ok);
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -100,7 +94,7 @@ export function SignInForm({
 
               <div className="flex flex-col gap-3">
                 <Button className="w-full" disabled={pending} type="submit">
-                  Login
+                  Se connecter
                 </Button>
 
                 {/* Ce bouton déclenche l’action OAuth Google */}

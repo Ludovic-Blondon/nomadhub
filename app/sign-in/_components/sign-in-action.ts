@@ -1,5 +1,6 @@
 import { authClient } from "@/lib/auth-client";
 import { signInSchema } from "@/lib/validations/auth";
+import { googleSignIn as googleOAuth } from "@/lib/auth-utils";
 
 export type SignInState = {
   ok: boolean;
@@ -84,41 +85,15 @@ export async function handleSignInSubmit(
 }
 
 export async function googleSignIn() {
-  try {
-    const { error, data } = await authClient.signIn.social({
-      provider: "google",
-      callbackURL: "/",
-    });
+  const result = await googleOAuth();
 
-    if (error) {
-      // eslint-disable-next-line no-console
-      console.error("Erreur OAuth Google:", error);
-
-      return {
-        ok: false,
-        message: error.message ?? "Erreur lors de la connexion avec Google",
-        fieldErrors: { general: error.message ?? "Erreur OAuth" },
-        values: { email: "" },
-      };
-    }
-
-    return {
-      ok: true,
-      message: "Connexion avec Google réussie",
-      fieldErrors: {},
-      values: {
-        email: "user" in data && data.user ? (data.user.email ?? "") : "",
-      },
-    };
-  } catch (error: unknown) {
-    // eslint-disable-next-line no-console
-    console.error("Erreur OAuth Google inattendue:", error);
-
-    return {
-      ok: false,
-      message: "Erreur inattendue lors de la connexion avec Google",
-      fieldErrors: { general: "Erreur inattendue" },
-      values: { email: "" },
-    };
-  }
+  return {
+    ...result,
+    values: {
+      email:
+        result.ok && result.data && "user" in result.data && result.data.user
+          ? (result.data.user.email ?? "")
+          : "",
+    },
+  };
 }
