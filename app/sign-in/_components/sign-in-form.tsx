@@ -4,7 +4,14 @@ import Link from "next/link";
 import { AlertCircle } from "lucide-react";
 import { useActionState } from "react";
 
+import {
+  handleSignInSubmit,
+  initialState,
+  googleSignIn,
+} from "./sign-in-action";
+
 import { cn } from "@/lib/utils";
+import { useAuthRedirect } from "@/hooks/use-auth-redirect";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,20 +22,18 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signIn, googleSignIn, LoginState } from "@/lib/actions/auth"; // ⬅️
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-export function LoginForm({
+export function SignInForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const initialState: LoginState = {
-    ok: false,
-    message: undefined,
-    fieldErrors: {},
-    values: {},
-  };
-  const [state, formAction, pending] = useActionState(signIn, initialState);
+  const [state, formAction, pending] = useActionState(
+    handleSignInSubmit,
+    initialState,
+  );
+
+  useAuthRedirect(state.ok);
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -40,10 +45,17 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {state?.message && (
-            <Alert className="mb-4" variant="destructive">
+          {!state.ok && state?.message && (
+            <Alert aria-live="polite" className="mb-4" variant="destructive">
               <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{state.message}</AlertDescription>
+              <AlertTitle>{state.message}</AlertTitle>
+              <AlertDescription>
+                {Object.entries(state.fieldErrors ?? {})
+                  .filter(([_, value]) => value)
+                  .map(([key, value]) => (
+                    <p key={key}>{value}</p>
+                  ))}
+              </AlertDescription>
             </Alert>
           )}
           <form noValidate action={formAction}>
@@ -82,7 +94,7 @@ export function LoginForm({
 
               <div className="flex flex-col gap-3">
                 <Button className="w-full" disabled={pending} type="submit">
-                  Login
+                  Se connecter
                 </Button>
 
                 {/* Ce bouton déclenche l’action OAuth Google */}
