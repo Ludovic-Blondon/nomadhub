@@ -4,7 +4,14 @@ import Link from "next/link";
 import { AlertCircle } from "lucide-react";
 import { useActionState } from "react";
 
+import {
+  handleSignUpSubmit,
+  initialState,
+  googleSignIn,
+} from "./sign-up-action";
+
 import { cn } from "@/lib/utils";
+import { useAuthRedirect } from "@/hooks/use-auth-redirect";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,19 +23,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { signUp, googleSignIn, SignUpState } from "@/lib/actions/auth"; // ⬅️ à implémenter côté serveur
 
-export default function SignUpForm({
+export function SignUpForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const initialState: SignUpState = {
-    ok: false,
-    message: undefined,
-    fieldErrors: {},
-    values: {},
-  };
-  const [state, formAction, pending] = useActionState(signUp, initialState);
+  const [state, formAction, pending] = useActionState(
+    handleSignUpSubmit,
+    initialState,
+  );
+
+  useAuthRedirect(state.ok);
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -36,12 +41,12 @@ export default function SignUpForm({
         <CardHeader>
           <CardTitle>Créer un compte</CardTitle>
           <CardDescription>
-            Renseigne tes informations pour commencer
+            Renseignez vos informations pour commencer
           </CardDescription>
         </CardHeader>
 
         <CardContent>
-          {state?.message && (
+          {!state.ok && state?.message && (
             <Alert aria-live="polite" className="mb-4" variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>{state.message}</AlertTitle>
@@ -78,7 +83,7 @@ export default function SignUpForm({
                   defaultValue={(state.values?.lastname as string) ?? ""}
                   id="lastname"
                   name="lastname"
-                  placeholder="Ada Lovelace"
+                  placeholder="Dupont"
                   type="text"
                 />
               </div>
