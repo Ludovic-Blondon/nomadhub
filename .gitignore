@@ -42,3 +42,6 @@ bun.lockb
 
 # claude
 .claude
+
+# images (ignore only subfolder)
+/public/images/*/

@@ -1,23 +1,18 @@
+import { promises as fs } from "fs";
+import path from "path";
+
 import { count, eq } from "drizzle-orm";
 
 import { db } from "..";
-import { user, room } from "../schemas";
+import { user, room, media, review } from "../schemas";
 
 import { rooms } from "./_data/rooms";
+import { images } from "./_data/images";
+import { reviews } from "./_data/reviews";
 
 import { auth } from "@/lib/auth";
 
 export const seed = async () => {
-  const author = await db.query.user.findFirst({
-    where: eq(user.email, "ludovicblondon@gmail.com"),
-  });
-
-  if (!author) {
-    throw new Error("Author not found");
-  }
-
-  console.log(`author id: ${author?.id}`, `author email: ${author?.email}`);
-
   try {
     await insertUser();
     await insertRoom();
@@ -47,6 +42,16 @@ const insertRoom = async () => {
     return;
   }
 
+  const guest = await db.query.user.findFirst({
+    where: eq(user.email, "guest@nomadhub.com"),
+  });
+
+  if (!guest) {
+    console.error("Guest not found");
+
+    return;
+  }
+
   rooms.forEach(async (_room) => {
     const [row] = await db
       .insert(room)
@@ -55,11 +60,77 @@ const insertRoom = async () => {
 
     console.log(row?.insertedId);
 
-    // select 5 random images from the images array
-    // you should cp the 5 images because path is unique in db
-    // add a prefix to image name but keep the original name
-    // the path should be generate randomly like this /images/roomId/prefix_imageName.jpg
-    // insert it in db with the room id
+    if (row?.insertedId) {
+      // Sélectionner 5 images aléatoires depuis le tableau images
+      const shuffledImages = [...images].sort(() => Math.random() - 0.5);
+      const selectedImages = shuffledImages.slice(0, 5);
+
+      // Créer les copies avec des paths uniques
+      const roomImages = await Promise.all(
+        selectedImages.map(async (image) => {
+          // Générer un préfixe aléatoire court (6 caractères)
+          const prefix = crypto.randomUUID().slice(0, 6);
+
+          // Nouveau nom avec préfixe
+          const newName = `${prefix}_${image.name}`;
+
+          // Construire le nouveau path : /images/{roomId}/{prefix}_{originalName}
+          const newPath = `/images/${row.insertedId}/${newName}`;
+
+          // Chemins des fichiers
+          const sourcePath = path.join(process.cwd(), "public", image.path);
+          const destDir = path.join(
+            process.cwd(),
+            "public",
+            "images",
+            row.insertedId,
+          );
+          const destPath = path.join(destDir, newName);
+
+          // Créer le répertoire de destination s'il n'existe pas
+          await fs.mkdir(destDir, { recursive: true });
+
+          // Copier le fichier physique
+          await fs.copyFile(sourcePath, destPath);
+
+          return {
+            ...image,
+            name: newName,
+            path: newPath,
+            roomId: row.insertedId,
+          };
+        }),
+      );
+
+      // Insérer les images en base de données
+      for (const roomImage of roomImages) {
+        await db.insert(media).values(roomImage);
+      }
+
+      console.log(
+        `Inserted ${roomImages.length} images for room ${row.insertedId}`,
+      );
+
+      // Sélectionner 3 reviews aléatoires depuis le tableau reviews
+      const shuffledReviews = [...reviews].sort(() => Math.random() - 0.5);
+      const selectedReviews = shuffledReviews.slice(0, 3);
+
+      // Créer les reviews avec guest.id et roomId
+      const roomReviews = selectedReviews.map((reviewData) => ({
+        ...reviewData,
+        authorId: guest.id,
+        roomId: row.insertedId,
+      }));
+
+      // Insérer les reviews en base de données
+      for (const roomReview of roomReviews) {
+        await db.insert(review).values(roomReview);
+      }
+
+      console.log(
+        `Inserted ${roomReviews.length} reviews for room ${row.insertedId}`,
+      );
+    }
   });
 };
 
