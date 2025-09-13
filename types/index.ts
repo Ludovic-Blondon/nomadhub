@@ -1,5 +1,17 @@
 import { SVGProps } from "react";
+import { InferSelectModel } from "drizzle-orm";
 
+import { room, user, review, media } from "@/db/schemas";
+
+export type RoomWithRelations = InferSelectModel<typeof room> & {
+  author: InferSelectModel<typeof user>;
+  reviews: InferSelectModel<typeof review>[];
+  medias: InferSelectModel<typeof media>[];
+};
+
+export type ReviewWithRelations = InferSelectModel<typeof review> & {
+  author: InferSelectModel<typeof user>;
+};
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
@@ -15,14 +27,6 @@ export type Room = {
   rating: number;
   reviews?: Review[];
   author: User;
-};
-
-export type RoomLight = {
-  id: number;
-  city: string;
-  neighborhood: string;
-  img: string;
-  price: string;
 };
 
 export type User = {

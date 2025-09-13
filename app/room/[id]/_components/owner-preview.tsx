@@ -1,14 +1,14 @@
 import { StarRating } from "../../../_common/star-rating";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Room } from "@/types";
+import { RoomWithRelations } from "@/types";
 
-export default function OwnerPreview({ room }: { room: Room }) {
+export default function OwnerPreview({ room }: { room: RoomWithRelations }) {
   return (
     <div className="flex justify-between flex-row gap-2">
       <div className="flex flex-row gap-2">
         <Avatar>
-          <AvatarImage src={room.author.avatarUrl} />
+          <AvatarImage src={room.author.image || undefined} />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
 

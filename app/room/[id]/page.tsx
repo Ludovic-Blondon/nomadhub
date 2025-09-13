@@ -18,7 +18,7 @@ export default async function Room({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const room = await getRoomById(Number(id));
+  const room = await getRoomById(id);
 
   return (
     <div className="flex flex-col gap-4 space-y-4">

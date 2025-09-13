@@ -4,9 +4,9 @@ import { StarRating } from "../../../../_common/star-rating";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Review } from "@/types";
+import { ReviewWithRelations } from "@/types";
 
-export function ReviewCard({ review }: { review: Review }) {
+export function ReviewCard({ review }: { review: ReviewWithRelations }) {
   const initials = review.author.name
     .split(" ")
     .map((w) => w[0])
@@ -24,11 +24,8 @@ export function ReviewCard({ review }: { review: Review }) {
       <CardContent className="p-4 space-y-3">
         <div className="flex items-center gap-3">
           <Avatar>
-            {review.author.avatarUrl && (
-              <AvatarImage
-                alt={review.author.name}
-                src={review.author.avatarUrl}
-              />
+            {review.author.image && (
+              <AvatarImage alt={review.author.name} src={review.author.image} />
             )}
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>

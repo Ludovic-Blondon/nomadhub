@@ -1,6 +1,6 @@
 "use client";
 
-import type { Room } from "@/types";
+import type { RoomWithRelations } from "@/types";
 
 import { useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
@@ -51,7 +51,7 @@ function useMediaQuery(query: string) {
 type BookingState = "selecting" | "loading" | "confirmed";
 
 type BookingDialogProps = {
-  room: Room;
+  room: RoomWithRelations;
 };
 
 export function BookingDialog({ room }: BookingDialogProps) {

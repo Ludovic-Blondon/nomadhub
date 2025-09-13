@@ -2,9 +2,9 @@
 import { Card, CardBody, CardFooter, Image, Link } from "@heroui/react";
 import { ArrowUpRight } from "lucide-react";
 
-import { Room } from "@/types";
+import { RoomWithRelations } from "@/types";
 
-export default function HomeCard({ item }: { item: Room }) {
+export default function HomeCard({ item }: { item: RoomWithRelations }) {
   return (
     <Card
       key={item.id}
@@ -21,7 +21,7 @@ export default function HomeCard({ item }: { item: Room }) {
             className="w-full object-cover h-[140px]"
             radius="lg"
             shadow="sm"
-            src={item.images[0]}
+            src={item.medias[0].path}
             width="100%"
           />
           <span

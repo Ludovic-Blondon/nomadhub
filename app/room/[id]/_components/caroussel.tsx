@@ -10,13 +10,13 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Room } from "@/types";
+import { RoomWithRelations } from "@/types";
 
-export function Caroussel({ room }: { room: Room }) {
+export function Caroussel({ room }: { room: RoomWithRelations }) {
   return (
     <Carousel className="w-full max-w-xl h-full">
       <CarouselContent>
-        {room.images.map((image, index) => (
+        {room.medias.map((media, index) => (
           <CarouselItem key={index}>
             <div className="p-1 w-full h-full flex items-center justify-center">
               <div className="relative w-full h-full flex items-center">
@@ -24,7 +24,7 @@ export function Caroussel({ room }: { room: Room }) {
                   alt={`${room.title} - ${room.city} - ${room.neighborhood}`}
                   className="object-contain"
                   removeWrapper={true}
-                  src={image}
+                  src={media.path}
                   width={1000}
                 />
               </div>
