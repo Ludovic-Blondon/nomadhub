@@ -29,14 +29,6 @@ export type Room = {
   author: User;
 };
 
-export type RoomLight = {
-  id: number;
-  city: string;
-  neighborhood: string;
-  img: string;
-  price: string;
-};
-
 export type User = {
   name: string;
   avatarUrl?: string;
