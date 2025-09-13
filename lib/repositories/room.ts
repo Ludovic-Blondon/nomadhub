@@ -1,21 +1,31 @@
 import "server-only";
 
-import { Room, RoomWithRelations } from "@/types";
-import { rooms } from "@/mock/rooms";
+import { eq } from "drizzle-orm";
+import { notFound } from "next/navigation";
+
+import { RoomWithRelations } from "@/types";
 import { db } from "@/db";
+import { room } from "@/db/schemas";
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+export async function getRoomById(id: string) {
+  const result = await db.query.room.findFirst({
+    where: eq(room.id, id),
+    with: {
+      author: true,
+      medias: true,
+      reviews: {
+        with: {
+          author: true,
+        },
+      },
+    },
+  });
 
-export async function getRoomById(id: number): Promise<Room> {
-  await sleep(300);
-
-  const room = rooms.find((room) => room.id === id);
-
-  if (!room) {
-    throw new Error("Room not found");
+  if (!result) {
+    return notFound();
   }
 
-  return room;
+  return result!;
 }
 
 export async function getRooms(): Promise<RoomWithRelations[]> {

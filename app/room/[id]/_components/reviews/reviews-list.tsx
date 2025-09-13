@@ -2,9 +2,13 @@
 
 import { ReviewCard } from "./review-card";
 
-import { Review } from "@/types";
+import { ReviewWithRelations } from "@/types";
 
-export default function ReviewsList({ reviews }: { reviews: Review[] }) {
+export default function ReviewsList({
+  reviews,
+}: {
+  reviews: ReviewWithRelations[];
+}) {
   if (!reviews?.length) {
     return (
       <p className="text-sm text-muted-foreground">

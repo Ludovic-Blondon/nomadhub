@@ -9,6 +9,9 @@ export type RoomWithRelations = InferSelectModel<typeof room> & {
   medias: InferSelectModel<typeof media>[];
 };
 
+export type ReviewWithRelations = InferSelectModel<typeof review> & {
+  author: InferSelectModel<typeof user>;
+};
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
