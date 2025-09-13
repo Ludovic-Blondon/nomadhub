@@ -1,6 +1,8 @@
 import "server-only";
-import { Room } from "@/types";
+
+import { Room, RoomWithRelations } from "@/types";
 import { rooms } from "@/mock/rooms";
+import { db } from "@/db";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -16,8 +18,14 @@ export async function getRoomById(id: number): Promise<Room> {
   return room;
 }
 
-export async function getRooms(): Promise<Room[]> {
-  await sleep(300);
+export async function getRooms(): Promise<RoomWithRelations[]> {
+  const rooms = await db.query.room.findMany({
+    with: {
+      author: true,
+      reviews: true,
+      medias: true,
+    },
+  });
 
   return rooms;
 }
