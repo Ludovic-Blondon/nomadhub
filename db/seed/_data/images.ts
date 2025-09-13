@@ -1,0 +1,88 @@
+import { media } from "@/db/schemas";
+
+export const images: Omit<typeof media.$inferInsert, "id">[] = [
+  {
+    name: "pexels-chaitaastic-1918291-optimized.jpeg",
+    originalName: "pexels-chaitaastic-1918291-optimized.jpeg",
+    size: 245678,
+    path: "/images/pexels-chaitaastic-1918291-optimized.jpeg",
+    mimeType: "image/jpeg",
+  },
+  {
+    name: "pexels-fotoaibe-813692-optimized.jpeg",
+    originalName: "pexels-fotoaibe-813692-optimized.jpeg",
+    size: 189234,
+    path: "/images/pexels-fotoaibe-813692-optimized.jpeg",
+    mimeType: "image/jpeg",
+  },
+  {
+    name: "pexels-pixabay-271624-optimized.jpeg",
+    originalName: "pexels-pixabay-271624-optimized.jpeg",
+    size: 312456,
+    path: "/images/pexels-pixabay-271624-optimized.jpeg",
+    mimeType: "image/jpeg",
+  },
+  {
+    name: "pexels-fotoaibe-1571460-optimized.jpeg",
+    originalName: "pexels-fotoaibe-1571460-optimized.jpeg",
+    size: 278901,
+    path: "/images/pexels-fotoaibe-1571460-optimized.jpeg",
+    mimeType: "image/jpeg",
+  },
+  {
+    name: "pexels-fotoaibe-1643384-optimized.jpeg",
+    originalName: "pexels-fotoaibe-1643384-optimized.jpeg",
+    size: 156789,
+    path: "/images/pexels-fotoaibe-1643384-optimized.jpeg",
+    mimeType: "image/jpeg",
+  },
+  {
+    name: "pexels-medhat-ayad-122846-439227-optimized.jpeg",
+    originalName: "pexels-medhat-ayad-122846-439227-optimized.jpeg",
+    size: 423567,
+    path: "/images/pexels-medhat-ayad-122846-439227-optimized.jpeg",
+    mimeType: "image/jpeg",
+  },
+  {
+    name: "pexels-donaldtong94-189333-optimized.jpeg",
+    originalName: "pexels-donaldtong94-189333-optimized.jpeg",
+    size: 234567,
+    path: "/images/pexels-donaldtong94-189333-optimized.jpeg",
+    mimeType: "image/jpeg",
+  },
+  {
+    name: "pexels-homelane-com-492179-1776574-optimized.jpeg",
+    originalName: "pexels-homelane-com-492179-1776574-optimized.jpeg",
+    size: 345678,
+    path: "/images/pexels-homelane-com-492179-1776574-optimized.jpeg",
+    mimeType: "image/jpeg",
+  },
+  {
+    name: "pexels-zvolskiy-2082087-optimized.jpeg",
+    originalName: "pexels-zvolskiy-2082087-optimized.jpeg",
+    size: 298765,
+    path: "/images/pexels-zvolskiy-2082087-optimized.jpeg",
+    mimeType: "image/jpeg",
+  },
+  {
+    name: "pexels-fotoaibe-1571468-optimized.jpeg",
+    originalName: "pexels-fotoaibe-1571468-optimized.jpeg",
+    size: 267890,
+    path: "/images/pexels-fotoaibe-1571468-optimized.jpeg",
+    mimeType: "image/jpeg",
+  },
+  {
+    name: "pexels-john-tekeridis-21837-1428348-optimized.jpeg",
+    originalName: "pexels-john-tekeridis-21837-1428348-optimized.jpeg",
+    size: 378901,
+    path: "/images/pexels-john-tekeridis-21837-1428348-optimized.jpeg",
+    mimeType: "image/jpeg",
+  },
+  {
+    name: "pexels-pixabay-271816-optimized.jpeg",
+    originalName: "pexels-pixabay-271816-optimized.jpeg",
+    size: 212345,
+    path: "/images/pexels-pixabay-271816-optimized.jpeg",
+    mimeType: "image/jpeg",
+  },
+];
