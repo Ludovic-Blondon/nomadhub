@@ -14,6 +14,11 @@ import { reviews } from "./_data/reviews";
 
 import { auth } from "@/lib/auth";
 
+// Configuration constants
+const MAX_IMAGES_PER_ROOM = 5;
+const MAX_REVIEWS_PER_ROOM = 3;
+const UUID_PREFIX_LENGTH = 6;
+
 export const seed = async () => {
   try {
     await insertUser();
@@ -54,86 +59,90 @@ const insertRoom = async () => {
     return;
   }
 
-  rooms.forEach(async (_room) => {
-    const [row] = await db
-      .insert(room)
-      .values({ ..._room, authorId: host?.id })
-      .returning({ insertedId: room.id });
+  for (const _room of rooms) {
+    try {
+      const [row] = await db
+        .insert(room)
+        .values({ ..._room, authorId: host?.id })
+        .returning({ insertedId: room.id });
 
-    console.log(row?.insertedId);
+      console.log(row?.insertedId);
 
-    if (row?.insertedId) {
-      // Sélectionner 5 images aléatoires depuis le tableau images
-      const shuffledImages = [...images].sort(() => Math.random() - 0.5);
-      const selectedImages = shuffledImages.slice(0, 5);
+      if (row?.insertedId) {
+        // Sélectionner des images aléatoires depuis le tableau images
+        const shuffledImages = [...images].sort(() => Math.random() - 0.5);
+        const selectedImages = shuffledImages.slice(0, MAX_IMAGES_PER_ROOM);
 
-      // Créer les copies avec des paths uniques
-      const roomImages = await Promise.all(
-        selectedImages.map(async (image) => {
-          // Générer un préfixe aléatoire court (6 caractères)
-          const prefix = crypto.randomUUID().slice(0, 6);
+        // Créer les copies avec des paths uniques
+        const roomImages = await Promise.all(
+          selectedImages.map(async (image) => {
+            // Générer un préfixe aléatoire court
+            const prefix = crypto.randomUUID().slice(0, UUID_PREFIX_LENGTH);
 
-          // Nouveau nom avec préfixe
-          const newName = `${prefix}_${image.name}`;
+            // Nouveau nom avec préfixe
+            const newName = `${prefix}_${image.name}`;
 
-          // Construire le nouveau path : /images/{roomId}/{prefix}_{originalName}
-          const newPath = `/images/${row.insertedId}/${newName}`;
+            // Construire le nouveau path : /images/{roomId}/{prefix}_{originalName}
+            const newPath = `/images/${row.insertedId}/${newName}`;
 
-          // Chemins des fichiers
-          const sourcePath = path.join(process.cwd(), "public", image.path);
-          const destDir = path.join(
-            process.cwd(),
-            "public",
-            "images",
-            row.insertedId,
-          );
-          const destPath = path.join(destDir, newName);
+            // Chemins des fichiers
+            const sourcePath = path.join(process.cwd(), "public", image.path);
+            const destDir = path.join(
+              process.cwd(),
+              "public",
+              "images",
+              row.insertedId,
+            );
+            const destPath = path.join(destDir, newName);
 
-          // Créer le répertoire de destination s'il n'existe pas
-          await fs.mkdir(destDir, { recursive: true });
+            // Créer le répertoire de destination s'il n'existe pas
+            await fs.mkdir(destDir, { recursive: true });
 
-          // Copier le fichier physique
-          await fs.copyFile(sourcePath, destPath);
+            // Copier le fichier physique
+            await fs.copyFile(sourcePath, destPath);
 
-          return {
-            ...image,
-            name: newName,
-            path: newPath,
-            roomId: row.insertedId,
-          };
-        }),
-      );
+            return {
+              ...image,
+              name: newName,
+              path: newPath,
+              roomId: row.insertedId,
+            };
+          }),
+        );
 
-      // Insérer les images en base de données
-      for (const roomImage of roomImages) {
-        await db.insert(media).values(roomImage);
+        // Insérer les images en base de données
+        for (const roomImage of roomImages) {
+          await db.insert(media).values(roomImage);
+        }
+
+        console.log(
+          `Inserted ${roomImages.length} images for room ${row.insertedId}`,
+        );
+
+        // Sélectionner des reviews aléatoires depuis le tableau reviews
+        const shuffledReviews = [...reviews].sort(() => Math.random() - 0.5);
+        const selectedReviews = shuffledReviews.slice(0, MAX_REVIEWS_PER_ROOM);
+
+        // Créer les reviews avec guest.id et roomId
+        const roomReviews = selectedReviews.map((reviewData) => ({
+          ...reviewData,
+          authorId: guest.id,
+          roomId: row.insertedId,
+        }));
+
+        // Insérer les reviews en base de données
+        for (const roomReview of roomReviews) {
+          await db.insert(review).values(roomReview);
+        }
+
+        console.log(
+          `Inserted ${roomReviews.length} reviews for room ${row.insertedId}`,
+        );
       }
-
-      console.log(
-        `Inserted ${roomImages.length} images for room ${row.insertedId}`,
-      );
-
-      // Sélectionner 3 reviews aléatoires depuis le tableau reviews
-      const shuffledReviews = [...reviews].sort(() => Math.random() - 0.5);
-      const selectedReviews = shuffledReviews.slice(0, 3);
-
-      // Créer les reviews avec guest.id et roomId
-      const roomReviews = selectedReviews.map((reviewData) => ({
-        ...reviewData,
-        authorId: guest.id,
-        roomId: row.insertedId,
-      }));
-
-      // Insérer les reviews en base de données
-      for (const roomReview of roomReviews) {
-        await db.insert(review).values(roomReview);
-      }
-
-      console.log(
-        `Inserted ${roomReviews.length} reviews for room ${row.insertedId}`,
-      );
+    } catch (error) {
+      console.error(`Failed to seed room: ${_room.title}`, error);
     }
-  });
+  }
 };
 
 const insertUser = async () => {

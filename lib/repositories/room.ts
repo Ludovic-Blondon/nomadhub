@@ -1,6 +1,6 @@
 import "server-only";
 
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { notFound } from "next/navigation";
 
 import { RoomWithRelations } from "@/types";
@@ -8,6 +8,10 @@ import { db } from "@/db";
 import { room } from "@/db/schemas";
 
 export async function getRoomById(id: string) {
+  if (!id || id.trim() === "") {
+    return notFound();
+  }
+
   const result = await db.query.room.findFirst({
     where: eq(room.id, id),
     with: {
@@ -17,6 +21,7 @@ export async function getRoomById(id: string) {
         with: {
           author: true,
         },
+        orderBy: (reviews) => [desc(reviews.createdAt)],
       },
     },
   });
@@ -25,7 +30,7 @@ export async function getRoomById(id: string) {
     return notFound();
   }
 
-  return result!;
+  return result;
 }
 
 export async function getRooms(): Promise<RoomWithRelations[]> {
