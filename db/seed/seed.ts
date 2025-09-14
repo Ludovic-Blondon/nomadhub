@@ -37,30 +37,41 @@ const insertBooking = async () => {
 
   if (nbOfBookings.count > 0) {
     console.error("Bookings already seeded");
+
+    return;
   }
 
   const guest = await db.query.user.findFirst({
-    where: eq(user.email, "guest@nomadhub.com"),
+    where: eq(user.email, process.env.SEED_GUEST_EMAIL!),
   });
 
   if (!guest) {
     console.error("Guest not found");
+
+    return;
   }
 
   const rooms = await db.select().from(room);
 
   if (!rooms) {
     console.error("Rooms not found");
+
+    return;
   }
 
   for (const _booking of bookings) {
-    await db.insert(booking).values({
-      ..._booking,
-      startDate: new Date(_booking.startDate),
-      endDate: new Date(_booking.endDate),
-      roomId: rooms[Math.floor(Math.random() * rooms.length)].id,
-      guestId: guest?.id!,
-    });
+    const [row] = await db
+      .insert(booking)
+      .values({
+        ..._booking,
+        startDate: new Date(_booking.startDate),
+        endDate: new Date(_booking.endDate),
+        roomId: rooms[Math.floor(Math.random() * rooms.length)].id,
+        guestId: guest?.id!,
+      })
+      .returning({ id: booking.id });
+
+    console.log(`Inserted booking: ${row.id}`);
   }
 };
 
@@ -76,7 +87,7 @@ const insertRoom = async () => {
   }
 
   const host = await db.query.user.findFirst({
-    where: eq(user.email, "host@nomadhub.com"),
+    where: eq(user.email, process.env.SEED_HOST_EMAIL!),
   });
 
   if (!host) {
@@ -86,7 +97,7 @@ const insertRoom = async () => {
   }
 
   const guest = await db.query.user.findFirst({
-    where: eq(user.email, "guest@nomadhub.com"),
+    where: eq(user.email, process.env.SEED_GUEST_EMAIL!),
   });
 
   if (!guest) {
@@ -185,7 +196,7 @@ const insertUser = async () => {
   const [nbOfHost] = await db
     .select({ count: count() })
     .from(user)
-    .where(eq(user.email, "host@nomadhub.com"));
+    .where(eq(user.email, process.env.SEED_HOST_EMAIL!));
 
   console.log(`nb of host: ${nbOfHost.count}`);
 
@@ -194,7 +205,7 @@ const insertUser = async () => {
   } else {
     await auth.api.signUpEmail({
       body: {
-        email: "host@nomadhub.com",
+        email: process.env.SEED_HOST_EMAIL!,
         password: process.env.SEED_HOST_PASSWORD!,
         name: "Host Nomadhub",
         image: "https://api.dicebear.com/7.x/initials/svg?seed=Host+Nomadhub",
@@ -205,7 +216,7 @@ const insertUser = async () => {
   const [nbOfGuest] = await db
     .select({ count: count() })
     .from(user)
-    .where(eq(user.email, "guest@nomadhub.com"));
+    .where(eq(user.email, process.env.SEED_GUEST_EMAIL!));
 
   console.log(`nb of guest: ${nbOfGuest.count}`);
 
@@ -214,7 +225,7 @@ const insertUser = async () => {
   } else {
     await auth.api.signUpEmail({
       body: {
-        email: "guest@nomadhub.com",
+        email: process.env.SEED_GUEST_EMAIL!,
         password: process.env.SEED_GUEST_PASSWORD!,
         name: "Guest Nomadhub",
         image: "https://api.dicebear.com/7.x/initials/svg?seed=Guest+Nomadhub",
