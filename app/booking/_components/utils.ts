@@ -6,25 +6,6 @@ import {
   Ban,
 } from "lucide-react";
 
-export const dateFmtFR = new Intl.DateTimeFormat("fr-FR", {
-  day: "numeric",
-  month: "long",
-  year: "numeric",
-});
-export const eurFmt = new Intl.NumberFormat("fr-FR", {
-  style: "currency",
-  currency: "EUR",
-  maximumFractionDigits: 0,
-});
-
-export function formatDate(dateString: string) {
-  const d = new Date(
-    dateString + (dateString.length === 10 ? "T00:00:00" : ""),
-  );
-
-  return dateFmtFR.format(d);
-}
-
 export const STATUS_MAP = {
   pending: {
     label: "En attente",

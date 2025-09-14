@@ -8,11 +8,11 @@ import Link from "next/link";
 import { MapPin, Calendar, Star, User, Euro, ArrowRight } from "lucide-react";
 
 import { StatusBadge } from "../status-badge";
-import { eurFmt, formatDate } from "../utils";
 import AcceptBookingDialog from "../dialogs/accept-booking-dialog";
 import CancelBookingDialog from "../dialogs/cancel-booking-dialog";
 import RefuseBookingDialog from "../dialogs/refuse-booking-dialog";
 
+import { eurFmt, formatDate, nightsBetween } from "@/lib/utils/date";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -30,20 +30,6 @@ export type HostActiveBookingCardProps = {
   onDecline?: (bookingId: BookingWithRelations["id"]) => Promise<void>;
   onCancel?: (bookingId: BookingWithRelations["id"]) => Promise<void>;
 };
-
-function nightsBetween(start: Date, end: Date) {
-  const y1 = start.getFullYear();
-  const m1 = start.getMonth() + 1;
-  const d1 = start.getDate();
-  const y2 = end.getFullYear();
-  const m2 = end.getMonth() + 1;
-  const d2 = end.getDate();
-  const startUTC = Date.UTC(y1, m1 - 1, d1);
-  const endUTC = Date.UTC(y2, m2 - 1, d2);
-  const diff = Math.max(0, endUTC - startUTC);
-
-  return Math.ceil(diff / (1000 * 60 * 60 * 24));
-}
 
 export function HostActiveBookingCard({ booking }: HostActiveBookingCardProps) {
   const nights = nightsBetween(booking.startDate, booking.endDate);
@@ -142,8 +128,8 @@ export function HostActiveBookingCard({ booking }: HostActiveBookingCardProps) {
                     Dates de séjour
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    {formatDate(booking.startDate.toISOString())} —{" "}
-                    {formatDate(booking.endDate.toISOString())}
+                    {formatDate(booking.startDate)} —{" "}
+                    {formatDate(booking.endDate)}
                   </p>
                   <p className="mt-0.5 text-xs text-muted-foreground">
                     {nights} nuit{nights > 1 ? "s" : ""}

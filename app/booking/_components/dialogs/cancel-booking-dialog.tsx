@@ -65,7 +65,7 @@ export default function CancelBookingDialog({
               <div className="space-y-3">
                 <InfoRow
                   label="Période"
-                  value={`${booking.startDate.toISOString()} → ${booking.endDate.toISOString()}`}
+                  value={`${booking.startDate.toDateString()} → ${booking.endDate.toDateString()}`}
                 />
                 <InfoRow label="Offre" value={booking.room.title} />
                 <InfoRow label="Ville" value={booking.room.city} />

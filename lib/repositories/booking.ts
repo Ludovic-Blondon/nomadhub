@@ -1,7 +1,7 @@
 import type { Role, Scope } from "@/types";
 
 import { Session } from "better-auth";
-import { and } from "drizzle-orm";
+import { and, exists } from "drizzle-orm";
 
 import { db } from "@/db";
 import { room } from "@/db/schemas/room";
@@ -44,42 +44,28 @@ export const getBookings = async (
   const userId = session.userId;
   const statuses = BOOKING_STATUSES[scope];
 
-  // Construire la condition where selon le rôle
-  const whereCondition =
-    role === "host"
-      ? buildHostWhereCondition(userId, statuses)
-      : buildGuestWhereCondition(userId, statuses);
+  if (role === "host") {
+    return await db.query.booking.findMany({
+      where: (booking, { eq, inArray }) =>
+        and(
+          exists(
+            db
+              .select()
+              .from(room)
+              .where(
+                and(eq(room.id, booking.roomId), eq(room.authorId, userId)),
+              ),
+          ),
+          inArray(booking.status, statuses),
+        ),
+      with: BOOKING_RELATIONS,
+    });
+  }
 
-  // Une seule requête avec la condition appropriée
+  // Pour les invités
   return await db.query.booking.findMany({
-    where: whereCondition,
+    where: (booking, { eq, inArray }) =>
+      and(eq(booking.guestId, userId), inArray(booking.status, statuses)),
     with: BOOKING_RELATIONS,
   });
 };
-
-/**
- * Construit la condition where pour un hôte
- */
-function buildHostWhereCondition(userId: string, statuses: BookingStatus[]) {
-  return (booking: any, { eq, exists, inArray }: any) =>
-    exists(
-      db
-        .select()
-        .from(room)
-        .where(
-          and(
-            eq(room.id, booking.roomId),
-            eq(room.authorId, userId),
-            inArray(booking.status, statuses),
-          ),
-        ),
-    );
-}
-
-/**
- * Construit la condition where pour un invité
- */
-function buildGuestWhereCondition(userId: string, statuses: BookingStatus[]) {
-  return (booking: any, { eq, inArray }: any) =>
-    and(eq(booking.guestId, userId), inArray(booking.status, statuses));
-}

@@ -1,8 +1,8 @@
 import Image from "next/image";
 
-import { formatDate } from "../utils";
 import { StatusBadge } from "../status-badge";
 
+import { formatDate } from "@/lib/utils/date";
 import { Card, CardContent } from "@/components/ui/card";
 import { BookingWithRelations, BookingStatus } from "@/types";
 
@@ -35,8 +35,7 @@ export function PastBookingCard({
                 {booking.room.title}
               </h3>
               <p className="text-xs text-muted-foreground mt-0.5">
-                {formatDate(booking.startDate.toISOString())} –{" "}
-                {formatDate(booking.endDate.toISOString())}
+                {formatDate(booking.startDate)} – {formatDate(booking.endDate)}
               </p>
             </div>
             <StatusBadge status={booking.status as BookingStatus} />
