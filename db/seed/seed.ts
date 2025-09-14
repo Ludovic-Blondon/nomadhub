@@ -195,7 +195,7 @@ const insertUser = async () => {
     await auth.api.signUpEmail({
       body: {
         email: "host@nomadhub.com",
-        password: "password",
+        password: process.env.SEED_HOST_PASSWORD!,
         name: "Host Nomadhub",
         image: "https://api.dicebear.com/7.x/initials/svg?seed=Host+Nomadhub",
       },
@@ -215,7 +215,7 @@ const insertUser = async () => {
     await auth.api.signUpEmail({
       body: {
         email: "guest@nomadhub.com",
-        password: "password",
+        password: process.env.SEED_GUEST_PASSWORD!,
         name: "Guest Nomadhub",
         image: "https://api.dicebear.com/7.x/initials/svg?seed=Guest+Nomadhub",
       },
