@@ -6,11 +6,12 @@ import path from "path";
 import { count, eq } from "drizzle-orm";
 
 import { db } from "..";
-import { user, room, media, review } from "../schemas";
+import { user, room, media, review, booking } from "../schemas";
 
 import { rooms } from "./_data/rooms";
 import { images } from "./_data/images";
 import { reviews } from "./_data/reviews";
+import { bookings } from "./_data/bookings";
 
 import { auth } from "@/lib/auth";
 
@@ -23,8 +24,43 @@ export const seed = async () => {
   try {
     await insertUser();
     await insertRoom();
+    await insertBooking();
   } catch (error) {
     console.error(error);
+  }
+};
+
+const insertBooking = async () => {
+  const [nbOfBookings] = await db.select({ count: count() }).from(booking);
+
+  console.log(`nb of bookings: ${nbOfBookings.count}`);
+
+  if (nbOfBookings.count > 0) {
+    console.error("Bookings already seeded");
+  }
+
+  const guest = await db.query.user.findFirst({
+    where: eq(user.email, "guest@nomadhub.com"),
+  });
+
+  if (!guest) {
+    console.error("Guest not found");
+  }
+
+  const rooms = await db.select().from(room);
+
+  if (!rooms) {
+    console.error("Rooms not found");
+  }
+
+  for (const _booking of bookings) {
+    await db.insert(booking).values({
+      ..._booking,
+      startDate: new Date(_booking.startDate),
+      endDate: new Date(_booking.endDate),
+      roomId: rooms[Math.floor(Math.random() * rooms.length)].id,
+      guestId: guest?.id!,
+    });
   }
 };
 

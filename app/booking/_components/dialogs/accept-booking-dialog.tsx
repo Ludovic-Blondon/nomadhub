@@ -1,6 +1,6 @@
 "use client";
 
-import type { Booking } from "@/types";
+import type { BookingWithRelations } from "@/types";
 
 import { useState } from "react";
 import { Check } from "lucide-react";
@@ -19,7 +19,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type CancelBookingState = "pending" | "loading" | "cancelled";
 
-export default function AcceptBookingDialog({ booking }: { booking: Booking }) {
+export default function AcceptBookingDialog({
+  booking,
+}: {
+  booking: BookingWithRelations;
+}) {
   const [bookingState, setBookingState] =
     useState<CancelBookingState>("pending");
   const [isOpen, setIsOpen] = useState(false);
@@ -69,7 +73,7 @@ export default function AcceptBookingDialog({ booking }: { booking: Booking }) {
                         {booking.guest.name}
                       </div>
                       <Avatar>
-                        <AvatarImage src={booking.guest.avatarUrl} />
+                        <AvatarImage src={booking.guest.image || undefined} />
                         <AvatarFallback>CN</AvatarFallback>
                       </Avatar>
                     </div>
@@ -77,7 +81,7 @@ export default function AcceptBookingDialog({ booking }: { booking: Booking }) {
                 </div>
                 <InfoRow
                   label="Période"
-                  value={`${booking.startDate} → ${booking.endDate}`}
+                  value={`${booking.startDate.toISOString()} → ${booking.endDate.toISOString()}`}
                 />
                 <InfoRow label="Offre" value={booking.room.title} />
                 <InfoRow label="Ville" value={booking.room.city} />

@@ -4,9 +4,13 @@ import { formatDate } from "../utils";
 import { StatusBadge } from "../status-badge";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Booking } from "@/types";
+import { BookingWithRelations, BookingStatus } from "@/types";
 
-export function PastBookingCard({ booking }: { booking: Booking }) {
+export function PastBookingCard({
+  booking,
+}: {
+  booking: BookingWithRelations;
+}) {
   return (
     <Card className="border rounded-xl hover:shadow-sm transition p-0">
       <CardContent className="p-2">
@@ -18,7 +22,7 @@ export function PastBookingCard({ booking }: { booking: Booking }) {
               alt={booking.room.title}
               className="object-cover"
               sizes="64px"
-              src={booking.room.images[0]}
+              src={booking.room.medias[0].path}
             />
           </div>
           {/* Infos + Status centré verticalement */}
@@ -31,10 +35,11 @@ export function PastBookingCard({ booking }: { booking: Booking }) {
                 {booking.room.title}
               </h3>
               <p className="text-xs text-muted-foreground mt-0.5">
-                {formatDate(booking.startDate)} – {formatDate(booking.endDate)}
+                {formatDate(booking.startDate.toISOString())} –{" "}
+                {formatDate(booking.endDate.toISOString())}
               </p>
             </div>
-            <StatusBadge status={booking.status} />
+            <StatusBadge status={booking.status as BookingStatus} />
           </div>
         </div>
       </CardContent>
