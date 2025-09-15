@@ -1,8 +1,5 @@
 /* eslint-disable no-console */
 
-import { promises as fs } from "fs";
-import path from "path";
-
 import { count, eq } from "drizzle-orm";
 
 import { db } from "..";
@@ -121,49 +118,51 @@ const insertRoom = async () => {
         const selectedImages = shuffledImages.slice(0, MAX_IMAGES_PER_ROOM);
 
         // Créer les copies avec des paths uniques
-        const roomImages = await Promise.all(
-          selectedImages.map(async (image) => {
-            // Générer un préfixe aléatoire court
-            const prefix = crypto.randomUUID().slice(0, UUID_PREFIX_LENGTH);
+        // const roomImages = await Promise.all(
+        //   selectedImages.map(async (image) => {
+        //     // Générer un préfixe aléatoire court
+        //     const prefix = crypto.randomUUID().slice(0, UUID_PREFIX_LENGTH);
 
-            // Nouveau nom avec préfixe
-            const newName = `${prefix}_${image.name}`;
+        //     // Nouveau nom avec préfixe
+        //     const newName = `${prefix}_${image.name}`;
 
-            // Construire le nouveau path : /images/{roomId}/{prefix}_{originalName}
-            const newPath = `/images/${row.insertedId}/${newName}`;
+        //     // Construire le nouveau path : /images/{roomId}/{prefix}_{originalName}
+        //     const newPath = `/images/${row.insertedId}/${newName}`;
 
-            // Chemins des fichiers
-            const sourcePath = path.join(process.cwd(), "public", image.path);
-            const destDir = path.join(
-              process.cwd(),
-              "public",
-              "images",
-              row.insertedId,
-            );
-            const destPath = path.join(destDir, newName);
+        //     // Chemins des fichiers
+        //     const sourcePath = path.join(process.cwd(), "public", image.path);
+        //     const destDir = path.join(
+        //       process.cwd(),
+        //       "public",
+        //       "images",
+        //       row.insertedId,
+        //     );
+        //     const destPath = path.join(destDir, newName);
 
-            // Créer le répertoire de destination s'il n'existe pas
-            await fs.mkdir(destDir, { recursive: true });
+        //     // Créer le répertoire de destination s'il n'existe pas
+        //     await fs.mkdir(destDir, { recursive: true });
 
-            // Copier le fichier physique
-            await fs.copyFile(sourcePath, destPath);
+        //     // Copier le fichier physique
+        //     await fs.copyFile(sourcePath, destPath);
 
-            return {
-              ...image,
-              name: newName,
-              path: newPath,
-              roomId: row.insertedId,
-            };
-          }),
-        );
+        //     return {
+        //       ...image,
+        //       name: newName,
+        //       path: newPath,
+        //       roomId: row.insertedId,
+        //     };
+        //   }),
+        // );
 
         // Insérer les images en base de données
-        for (const roomImage of roomImages) {
-          await db.insert(media).values(roomImage);
+        for (const roomImage of selectedImages) {
+          await db
+            .insert(media)
+            .values({ ...roomImage, roomId: row.insertedId });
         }
 
         console.log(
-          `Inserted ${roomImages.length} images for room ${row.insertedId}`,
+          `Inserted ${selectedImages.length} images for room ${row.insertedId}`,
         );
 
         // Sélectionner des reviews aléatoires depuis le tableau reviews
