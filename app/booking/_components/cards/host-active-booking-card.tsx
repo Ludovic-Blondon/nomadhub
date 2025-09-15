@@ -1,6 +1,6 @@
 "use client";
 
-import type { Booking } from "@/types";
+import type { BookingWithRelations } from "@/types";
 
 import React from "react";
 import Image from "next/image";
@@ -8,14 +8,15 @@ import Link from "next/link";
 import { MapPin, Calendar, Star, User, Euro, ArrowRight } from "lucide-react";
 
 import { StatusBadge } from "../status-badge";
-import { eurFmt, formatDate } from "../utils";
 import AcceptBookingDialog from "../dialogs/accept-booking-dialog";
 import CancelBookingDialog from "../dialogs/cancel-booking-dialog";
 import RefuseBookingDialog from "../dialogs/refuse-booking-dialog";
 
+import { eurFmt, formatDate, nightsBetween } from "@/lib/utils/date";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { BookingStatus } from "@/types";
 
 /**
  * 📌 HostActiveBookingCard — version "classe & minimaliste"
@@ -24,23 +25,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
  * - Layout responsive identique à la carte "voyageur" pour cohérence
  */
 export type HostActiveBookingCardProps = {
-  booking: Booking & {
-    guest?: { id: string | number; name: string; avatarUrl?: string } | null;
-  };
-  onAccept?: (bookingId: Booking["id"]) => Promise<void>;
-  onDecline?: (bookingId: Booking["id"]) => Promise<void>;
-  onCancel?: (bookingId: Booking["id"]) => Promise<void>;
+  booking: BookingWithRelations;
+  onAccept?: (bookingId: BookingWithRelations["id"]) => Promise<void>;
+  onDecline?: (bookingId: BookingWithRelations["id"]) => Promise<void>;
+  onCancel?: (bookingId: BookingWithRelations["id"]) => Promise<void>;
 };
-
-function nightsBetween(start: string, end: string) {
-  const [y1, m1, d1] = start.split("-").map(Number);
-  const [y2, m2, d2] = end.split("-").map(Number);
-  const startUTC = Date.UTC(y1, m1 - 1, d1);
-  const endUTC = Date.UTC(y2, m2 - 1, d2);
-  const diff = Math.max(0, endUTC - startUTC);
-
-  return Math.ceil(diff / (1000 * 60 * 60 * 24));
-}
 
 export function HostActiveBookingCard({ booking }: HostActiveBookingCardProps) {
   const nights = nightsBetween(booking.startDate, booking.endDate);
@@ -61,7 +50,7 @@ export function HostActiveBookingCard({ booking }: HostActiveBookingCardProps) {
               className="object-cover w-full h-full transition-transform duration-300 will-change-transform group-hover:scale-[1.02]"
               priority={false}
               sizes="(max-width: 1024px) 100vw, 320px"
-              src={booking.room.images[0]}
+              src={booking.room.medias[0].path}
             />
           </div>
 
@@ -107,7 +96,7 @@ export function HostActiveBookingCard({ booking }: HostActiveBookingCardProps) {
                   <Avatar className="h-6 w-6 ring-1 ring-border/60">
                     <AvatarImage
                       alt={booking.guest.name}
-                      src={booking.guest.avatarUrl}
+                      src={booking.guest.image || undefined}
                     />
                     <AvatarFallback>
                       <User aria-hidden="true" className="h-3 w-3" />
@@ -123,7 +112,7 @@ export function HostActiveBookingCard({ booking }: HostActiveBookingCardProps) {
               </div>
 
               <div className="flex items-center gap-2">
-                <StatusBadge status={booking.status} />
+                <StatusBadge status={booking.status as BookingStatus} />
               </div>
             </div>
 

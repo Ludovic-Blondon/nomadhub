@@ -1,6 +1,6 @@
 "use client";
 
-import type { Booking } from "@/types";
+import type { BookingWithRelations } from "@/types";
 
 import { useState } from "react";
 import { Ban } from "lucide-react";
@@ -18,7 +18,11 @@ import {
 
 type CancelBookingState = "pending" | "loading" | "cancelled";
 
-export default function CancelBookingDialog({ booking }: { booking: Booking }) {
+export default function CancelBookingDialog({
+  booking,
+}: {
+  booking: BookingWithRelations;
+}) {
   const [bookingState, setBookingState] =
     useState<CancelBookingState>("pending");
   const [isOpen, setIsOpen] = useState(false);
@@ -61,7 +65,7 @@ export default function CancelBookingDialog({ booking }: { booking: Booking }) {
               <div className="space-y-3">
                 <InfoRow
                   label="Période"
-                  value={`${booking.startDate} → ${booking.endDate}`}
+                  value={`${booking.startDate.toDateString()} → ${booking.endDate.toDateString()}`}
                 />
                 <InfoRow label="Offre" value={booking.room.title} />
                 <InfoRow label="Ville" value={booking.room.city} />

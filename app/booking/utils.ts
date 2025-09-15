@@ -1,4 +1,4 @@
-import { Role, Scope } from "./type";
+import { Role, Scope } from "@/types";
 
 export function coerceRole(v?: string): Role {
   return v === "host" ? "host" : "guest";
