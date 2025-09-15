@@ -1,34 +1,71 @@
-import type { Booking } from "@/types";
-import type { Role, Scope } from "@/app/booking/type";
+import type { Role, Scope } from "@/types";
 
-import { guestBookings, hostBookings } from "@/mock/bookings";
+import { Session } from "better-auth";
+import { and, exists } from "drizzle-orm";
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+import { db } from "@/db";
+import { room } from "@/db/schemas/room";
+import { BookingStatus } from "@/types";
 
-export async function getGuestBookings(): Promise<Booking[]> {
-  return guestBookings;
-}
-export async function getHostBookings(): Promise<Booking[]> {
-  return hostBookings;
-}
+// Constantes pour les statuts
+const BOOKING_STATUSES: Record<Scope, BookingStatus[]> = {
+  active: ["pending", "confirmed"],
+  past: ["cancelled", "completed", "rejected"],
+} as const;
 
-export async function getBookings(role: Role, scope: Scope) {
-  await sleep(100);
+// Relations communes pour éviter la duplication
+const BOOKING_RELATIONS = {
+  room: {
+    with: {
+      author: true,
+      medias: true,
+    },
+  },
+  guest: true,
+} as const;
 
-  const all = role === "host" ? hostBookings : guestBookings;
-
-  if (scope === "active") {
-    return filterActive(all);
+/**
+ * Récupère les réservations depuis la base de données selon le rôle et le scope
+ * @param role - Rôle de l'utilisateur (host ou guest)
+ * @param scope - Scope des réservations (active ou archived)
+ * @param session - Session de l'utilisateur
+ * @returns Liste des réservations avec leurs relations
+ */
+export const getBookings = async (
+  role: Role,
+  scope: Scope,
+  session: Session | null,
+) => {
+  // Guard clause pour session manquante
+  if (!session?.userId) {
+    return [];
   }
 
-  return filterPast(all);
-}
+  const userId = session.userId;
+  const statuses = BOOKING_STATUSES[scope];
 
-export function filterActive(all: Booking[]) {
-  return all.filter((b) => b.status === "pending" || b.status === "confirmed");
-}
-export function filterPast(all: Booking[]) {
-  return all.filter((b) =>
-    ["cancelled", "completed", "rejected"].includes(b.status),
-  );
-}
+  if (role === "host") {
+    return await db.query.booking.findMany({
+      where: (booking, { eq, inArray }) =>
+        and(
+          exists(
+            db
+              .select()
+              .from(room)
+              .where(
+                and(eq(room.id, booking.roomId), eq(room.authorId, userId)),
+              ),
+          ),
+          inArray(booking.status, statuses),
+        ),
+      with: BOOKING_RELATIONS,
+    });
+  }
+
+  // Pour les invités
+  return await db.query.booking.findMany({
+    where: (booking, { eq, inArray }) =>
+      and(eq(booking.guestId, userId), inArray(booking.status, statuses)),
+    with: BOOKING_RELATIONS,
+  });
+};

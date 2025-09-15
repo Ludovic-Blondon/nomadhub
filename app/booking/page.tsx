@@ -32,8 +32,8 @@ export default async function Page({
   const role = coerceRole(sp.role ?? defaults.role);
   const scope = coerceScope(sp.scope ?? defaults.scope);
 
-  const activeList = await getBookings(role, "active");
-  const pastList = await getBookings(role, "past");
+  const activeList = await getBookings(role, "active", session.session);
+  const pastList = await getBookings(role, "past", session.session);
 
   const activeCount = activeList.length;
   const pastCount = pastList.length;

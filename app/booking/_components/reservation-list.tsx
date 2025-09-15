@@ -1,3 +1,5 @@
+"use client";
+
 import { ActiveBookingCard } from "./cards/active-booking-card";
 import { PastBookingCard } from "./cards/past-booking-card";
 import { HostActiveBookingCard } from "./cards/host-active-booking-card";

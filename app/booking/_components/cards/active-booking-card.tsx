@@ -1,6 +1,6 @@
 "use client";
 
-import type { Booking } from "@/types";
+import type { BookingWithRelations, BookingStatus } from "@/types";
 
 import React from "react";
 import Image from "next/image";
@@ -8,22 +8,12 @@ import Link from "next/link";
 import { MapPin, Calendar, Star, User, Euro, ArrowRight } from "lucide-react";
 
 import { StatusBadge } from "../status-badge";
-import { eurFmt, formatDate } from "../utils";
 
+import { eurFmt, formatDate, nightsBetween } from "@/lib/utils/date";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import CancelBookingDialog from "@/app/booking/_components/dialogs/cancel-booking-dialog";
-
-function nightsBetween(start: string, end: string) {
-  const [y1, m1, d1] = start.split("-").map(Number);
-  const [y2, m2, d2] = end.split("-").map(Number);
-  const startUTC = Date.UTC(y1, m1 - 1, d1);
-  const endUTC = Date.UTC(y2, m2 - 1, d2);
-  const diff = Math.max(0, endUTC - startUTC);
-
-  return Math.ceil(diff / (1000 * 60 * 60 * 24));
-}
 
 /**
  * ActiveBookingCard — style épuré, classe et accessible
@@ -31,7 +21,11 @@ function nightsBetween(start: string, end: string) {
  * - Hiérarchie visuelle minimale, focus rings nets, ombres douces
  * - Layout responsive (image fixe à gauche sur lg+, stack sur mobile)
  */
-export function ActiveBookingCard({ booking }: { booking: Booking }) {
+export function ActiveBookingCard({
+  booking,
+}: {
+  booking: BookingWithRelations;
+}) {
   const nights = nightsBetween(booking.startDate, booking.endDate);
   const total = booking.room.price * nights;
 
@@ -50,7 +44,7 @@ export function ActiveBookingCard({ booking }: { booking: Booking }) {
               className="object-cover w-full h-full transition-transform duration-300 will-change-transform group-hover:scale-[1.02]"
               priority={false}
               sizes="(max-width: 1024px) 100vw, 320px"
-              src={booking.room.images[0]}
+              src={booking.room.medias[0].path}
             />
           </div>
 
@@ -96,7 +90,7 @@ export function ActiveBookingCard({ booking }: { booking: Booking }) {
                   <Avatar className="h-6 w-6 ring-1 ring-border/60">
                     <AvatarImage
                       alt={booking.room.author.name}
-                      src={booking.room.author.avatarUrl}
+                      src={booking.room.author.image || undefined}
                     />
                     <AvatarFallback>
                       <User aria-hidden="true" className="h-3 w-3" />
@@ -112,7 +106,7 @@ export function ActiveBookingCard({ booking }: { booking: Booking }) {
               </div>
 
               <div className="flex items-center gap-2">
-                <StatusBadge status={booking.status} />
+                <StatusBadge status={booking.status as BookingStatus} />
               </div>
             </div>
 
