@@ -68,7 +68,7 @@ export const media = pgTable("media", {
   name: text("name").notNull(),
   originalName: text("original_name").notNull(),
   size: integer("size").notNull(),
-  path: text("path").notNull().unique(),
+  path: text("path").notNull() /*.unique()*/, // temporary disable unique constraint
   mimeType: text("mime_type").notNull(),
   roomId: text("room_id").references(() => room.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
