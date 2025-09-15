@@ -5,36 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1757093364680,
-      "tag": "0000_faulty_kylun",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1757434594820,
-      "tag": "0001_youthful_psylocke",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1757523610309,
-      "tag": "0002_same_riptide",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1757523821145,
-      "tag": "0003_stale_malice",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1757528474735,
-      "tag": "0004_narrow_doctor_doom",
+      "when": 1757950542129,
+      "tag": "0000_robust_vampiro",
       "breakpoints": true
     }
   ]
