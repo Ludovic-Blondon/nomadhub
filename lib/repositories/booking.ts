@@ -1,7 +1,7 @@
 import type { Role, Scope } from "@/types";
 
 import { Session } from "better-auth";
-import { and, exists } from "drizzle-orm";
+import { and, exists, asc, desc } from "drizzle-orm";
 
 import { db } from "@/db";
 import { room } from "@/db/schemas/room";
@@ -44,6 +44,11 @@ export const getBookings = async (
   const userId = session.userId;
   const statuses = BOOKING_STATUSES[scope];
 
+  const orderBy =
+    scope === "active"
+      ? (fields: any) => asc(fields.startDate)
+      : (fields: any) => desc(fields.startDate);
+
   if (role === "host") {
     return await db.query.booking.findMany({
       where: (booking, { eq, inArray }) =>
@@ -59,6 +64,7 @@ export const getBookings = async (
           inArray(booking.status, statuses),
         ),
       with: BOOKING_RELATIONS,
+      orderBy,
     });
   }
 
@@ -67,5 +73,6 @@ export const getBookings = async (
     where: (booking, { eq, inArray }) =>
       and(eq(booking.guestId, userId), inArray(booking.status, statuses)),
     with: BOOKING_RELATIONS,
+    orderBy,
   });
 };
