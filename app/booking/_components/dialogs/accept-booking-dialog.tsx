@@ -5,6 +5,8 @@ import type { BookingWithRelations } from "@/types";
 import { useState } from "react";
 import { Check } from "lucide-react";
 
+import { acceptBookingAction } from "../actions/accept-booking-action";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,7 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-type CancelBookingState = "pending" | "loading" | "cancelled";
+type AcceptBookingState = "pending" | "loading" | "accepted" | "error";
 
 export default function AcceptBookingDialog({
   booking,
@@ -25,16 +27,31 @@ export default function AcceptBookingDialog({
   booking: BookingWithRelations;
 }) {
   const [bookingState, setBookingState] =
-    useState<CancelBookingState>("pending");
+    useState<AcceptBookingState>("pending");
   const [isOpen, setIsOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setBookingState("loading");
-    // TODO: Call API to cancel booking
-    setTimeout(() => setBookingState("cancelled"), 900);
+    try {
+      const result = await acceptBookingAction(booking.id);
+
+      if (result.ok) {
+        setBookingState("accepted");
+      } else {
+        setErrorMessage(result.message);
+        setBookingState("error");
+      }
+    } catch {
+      setErrorMessage("Erreur lors de l'acceptation");
+      setBookingState("error");
+    }
   };
 
-  const handleReset = () => setBookingState("pending");
+  const handleReset = () => {
+    setBookingState("pending");
+    setErrorMessage("");
+  };
   const handleClose = () => {
     setIsOpen(false);
     setTimeout(() => handleReset(), 200);
@@ -98,7 +115,7 @@ export default function AcceptBookingDialog({
             </div>
           )}
 
-          {bookingState === "cancelled" && (
+          {bookingState === "accepted" && (
             <div className="flex flex-col items-center justify-center py-12 space-y-4">
               <div className="h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
                 <svg
@@ -116,6 +133,29 @@ export default function AcceptBookingDialog({
                 </svg>
               </div>
               <p className="text-sm font-medium">Réservation acceptée</p>
+            </div>
+          )}
+
+          {bookingState === "error" && (
+            <div className="flex flex-col items-center justify-center py-12 space-y-4">
+              <div className="h-12 w-12 rounded-full bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center">
+                <svg
+                  className="h-6 w-6 text-orange-600 dark:text-orange-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                  />
+                </svg>
+              </div>
+              <p className="text-sm font-medium text-center">
+                {errorMessage || "Erreur lors de l'acceptation"}
+              </p>
             </div>
           )}
         </div>
@@ -138,7 +178,21 @@ export default function AcceptBookingDialog({
                 </Button>
               </>
             )}
-            {bookingState !== "pending" && (
+            {bookingState === "error" && (
+              <>
+                <Button
+                  className="w-full sm:w-auto"
+                  variant="outline"
+                  onClick={() => setBookingState("pending")}
+                >
+                  Réessayer
+                </Button>
+                <Button className="w-full sm:w-auto" onClick={handleClose}>
+                  Fermer
+                </Button>
+              </>
+            )}
+            {(bookingState === "accepted" || bookingState === "loading") && (
               <Button
                 className="w-full sm:w-auto"
                 disabled={bookingState === "loading"}
