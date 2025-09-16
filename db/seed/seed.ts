@@ -15,7 +15,6 @@ import { auth } from "@/lib/auth";
 // Configuration constants
 const MAX_IMAGES_PER_ROOM = 5;
 const MAX_REVIEWS_PER_ROOM = 3;
-const UUID_PREFIX_LENGTH = 6;
 
 export const seed = async () => {
   try {
