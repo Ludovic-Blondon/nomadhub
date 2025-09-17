@@ -8,7 +8,11 @@ export async function middleware(request: NextRequest) {
   // This is the recommended approach to optimistically redirect users
   // We recommend handling auth checks in each page/route
   if (!sessionCookie) {
-    return NextResponse.redirect(new URL("/sign-in", request.url));
+    const redirectUrl = new URL("/sign-in", request.url);
+
+    redirectUrl.searchParams.set("redirect", request.nextUrl.pathname);
+
+    return NextResponse.redirect(redirectUrl);
   }
 
   return NextResponse.next();

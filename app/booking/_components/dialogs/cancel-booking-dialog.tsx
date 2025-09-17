@@ -5,6 +5,8 @@ import type { BookingWithRelations } from "@/types";
 import { useState } from "react";
 import { Ban } from "lucide-react";
 
+import { cancelBookingAction } from "../actions/cancel-booking-action";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,7 +18,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-type CancelBookingState = "pending" | "loading" | "cancelled";
+type CancelBookingState = "pending" | "loading" | "cancelled" | "error";
 
 export default function CancelBookingDialog({
   booking,
@@ -26,14 +28,29 @@ export default function CancelBookingDialog({
   const [bookingState, setBookingState] =
     useState<CancelBookingState>("pending");
   const [isOpen, setIsOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setBookingState("loading");
-    // TODO: Call API to cancel booking
-    setTimeout(() => setBookingState("cancelled"), 900);
+    try {
+      const result = await cancelBookingAction(booking.id);
+
+      if (result.ok) {
+        setBookingState("cancelled");
+      } else {
+        setErrorMessage(result.message);
+        setBookingState("error");
+      }
+    } catch {
+      setErrorMessage("Erreur lors de l'annulation");
+      setBookingState("error");
+    }
   };
 
-  const handleReset = () => setBookingState("pending");
+  const handleReset = () => {
+    setBookingState("pending");
+    setErrorMessage("");
+  };
   const handleClose = () => {
     setIsOpen(false);
     setTimeout(() => handleReset(), 200);
@@ -108,6 +125,29 @@ export default function CancelBookingDialog({
               <p className="text-sm font-medium">Réservation annulée</p>
             </div>
           )}
+
+          {bookingState === "error" && (
+            <div className="flex flex-col items-center justify-center py-12 space-y-4">
+              <div className="h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
+                <svg
+                  className="h-6 w-6 text-red-600 dark:text-red-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M6 18L18 6M6 6l12 12"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                  />
+                </svg>
+              </div>
+              <p className="text-sm font-medium text-center">
+                {errorMessage || "Erreur lors de l'annulation"}
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="px-6 py-4 border-t border-border/50 bg-muted/20">
@@ -128,7 +168,21 @@ export default function CancelBookingDialog({
                 </Button>
               </>
             )}
-            {bookingState !== "pending" && (
+            {bookingState === "error" && (
+              <>
+                <Button
+                  className="w-full sm:w-auto"
+                  variant="outline"
+                  onClick={() => setBookingState("pending")}
+                >
+                  Réessayer
+                </Button>
+                <Button className="w-full sm:w-auto" onClick={handleClose}>
+                  Fermer
+                </Button>
+              </>
+            )}
+            {(bookingState === "cancelled" || bookingState === "loading") && (
               <Button
                 className="w-full sm:w-auto"
                 disabled={bookingState === "loading"}

@@ -5,6 +5,8 @@ import type { BookingWithRelations } from "@/types";
 import { useState } from "react";
 import { X } from "lucide-react";
 
+import { refuseBookingAction } from "../actions/refuse-booking-action";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,7 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-type CancelBookingState = "pending" | "loading" | "cancelled";
+type RefuseBookingState = "pending" | "loading" | "refused" | "error";
 
 export default function RefuseBookingDialog({
   booking,
@@ -25,16 +27,31 @@ export default function RefuseBookingDialog({
   booking: BookingWithRelations;
 }) {
   const [bookingState, setBookingState] =
-    useState<CancelBookingState>("pending");
+    useState<RefuseBookingState>("pending");
   const [isOpen, setIsOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setBookingState("loading");
-    // TODO: Call API to cancel booking
-    setTimeout(() => setBookingState("cancelled"), 900);
+    try {
+      const result = await refuseBookingAction(booking.id);
+
+      if (result.ok) {
+        setBookingState("refused");
+      } else {
+        setErrorMessage(result.message);
+        setBookingState("error");
+      }
+    } catch {
+      setErrorMessage("Erreur lors du refus");
+      setBookingState("error");
+    }
   };
 
-  const handleReset = () => setBookingState("pending");
+  const handleReset = () => {
+    setBookingState("pending");
+    setErrorMessage("");
+  };
   const handleClose = () => {
     setIsOpen(false);
     setTimeout(() => handleReset(), 200);
@@ -98,17 +115,17 @@ export default function RefuseBookingDialog({
             </div>
           )}
 
-          {bookingState === "cancelled" && (
+          {bookingState === "refused" && (
             <div className="flex flex-col items-center justify-center py-12 space-y-4">
-              <div className="h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+              <div className="h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
                 <svg
-                  className="h-6 w-6 text-green-600 dark:text-green-400"
+                  className="h-6 w-6 text-red-600 dark:text-red-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
                   <path
-                    d="M5 13l4 4L19 7"
+                    d="M6 18L18 6M6 6l12 12"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
@@ -116,6 +133,29 @@ export default function RefuseBookingDialog({
                 </svg>
               </div>
               <p className="text-sm font-medium">Réservation refusée</p>
+            </div>
+          )}
+
+          {bookingState === "error" && (
+            <div className="flex flex-col items-center justify-center py-12 space-y-4">
+              <div className="h-12 w-12 rounded-full bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center">
+                <svg
+                  className="h-6 w-6 text-orange-600 dark:text-orange-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                  />
+                </svg>
+              </div>
+              <p className="text-sm font-medium text-center">
+                {errorMessage || "Erreur lors du refus"}
+              </p>
             </div>
           )}
         </div>
@@ -138,7 +178,21 @@ export default function RefuseBookingDialog({
                 </Button>
               </>
             )}
-            {bookingState !== "pending" && (
+            {bookingState === "error" && (
+              <>
+                <Button
+                  className="w-full sm:w-auto"
+                  variant="outline"
+                  onClick={() => setBookingState("pending")}
+                >
+                  Réessayer
+                </Button>
+                <Button className="w-full sm:w-auto" onClick={handleClose}>
+                  Fermer
+                </Button>
+              </>
+            )}
+            {(bookingState === "refused" || bookingState === "loading") && (
               <Button
                 className="w-full sm:w-auto"
                 disabled={bookingState === "loading"}

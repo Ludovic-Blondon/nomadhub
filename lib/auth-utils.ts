@@ -4,7 +4,6 @@ export async function googleSignIn() {
   try {
     const { error, data } = await authClient.signIn.social({
       provider: "google",
-      callbackURL: "/",
     });
 
     if (error) {
