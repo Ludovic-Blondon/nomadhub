@@ -54,7 +54,6 @@ export async function handleSignInSubmit(
     const { error } = await authClient.signIn.email({
       email,
       password,
-      callbackURL: "/",
     });
 
     if (error) {

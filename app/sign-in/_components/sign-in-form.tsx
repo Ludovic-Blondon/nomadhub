@@ -12,6 +12,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { useAuthRedirect } from "@/hooks/use-auth-redirect";
+import { AuthLink } from "@/components/auth-link";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -112,9 +113,12 @@ export function SignInForm({
 
             <div className="mt-4 text-center text-sm">
               Pas de compte ?{" "}
-              <Link className="underline underline-offset-4" href="/sign-up">
+              <AuthLink
+                className="underline underline-offset-4"
+                href="/sign-up"
+              >
                 Créer un compte
-              </Link>
+              </AuthLink>
             </div>
           </form>
         </CardContent>

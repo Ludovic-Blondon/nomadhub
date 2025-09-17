@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { AlertCircle } from "lucide-react";
 import { useActionState } from "react";
 
@@ -12,6 +11,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { useAuthRedirect } from "@/hooks/use-auth-redirect";
+import { AuthLink } from "@/components/auth-link";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -160,9 +160,12 @@ export function SignUpForm({
 
             <div className="mt-4 text-center text-sm">
               Déjà un compte ?{" "}
-              <Link className="underline underline-offset-4" href="/sign-in">
+              <AuthLink
+                className="underline underline-offset-4"
+                href="/sign-in"
+              >
                 Se connecter
-              </Link>
+              </AuthLink>
             </div>
           </form>
         </CardContent>
