@@ -32,7 +32,9 @@ export const review = pgTable("review", {
   rating: real("rating").notNull(),
   title: text("title"),
   body: text("body").notNull(),
-  roomId: text("room_id").references(() => room.id),
+  roomId: text("room_id").references(() => room.id, {
+    onDelete: "cascade",
+  }),
   authorId: text("author_id")
     .notNull()
     .references(() => user.id, {
@@ -52,8 +54,12 @@ export const booking = pgTable("booking", {
   status: text("status").notNull(),
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date").notNull(),
-  roomId: text("room_id").references(() => room.id),
-  guestId: text("guest_id").references(() => user.id),
+  roomId: text("room_id").references(() => room.id, {
+    onDelete: "set null",
+  }),
+  guestId: text("guest_id").references(() => user.id, {
+    onDelete: "cascade",
+  }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
@@ -70,7 +76,9 @@ export const media = pgTable("media", {
   size: integer("size").notNull(),
   path: text("path").notNull() /*.unique()*/, // temporary disable unique constraint
   mimeType: text("mime_type").notNull(),
-  roomId: text("room_id").references(() => room.id),
+  roomId: text("room_id").references(() => room.id, {
+    onDelete: "cascade",
+  }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
