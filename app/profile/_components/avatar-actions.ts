@@ -1,49 +1,42 @@
+"use server";
+
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 
-import { NextRequest, NextResponse } from "next/server";
+import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { user } from "@/db/schemas";
 
-export async function POST(request: NextRequest) {
+export async function uploadAvatar(formData: FormData) {
   try {
     const session = await auth.api.getSession({
-      headers: request.headers,
+      headers: await headers(),
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+      throw new Error("Non autorisé");
     }
 
-    const formData = await request.formData();
     const file = formData.get("avatar") as File;
 
     if (!file) {
-      return NextResponse.json(
-        { error: "Aucun fichier fourni" },
-        { status: 400 },
-      );
+      throw new Error("Aucun fichier fourni");
     }
 
     // Validation du type de fichier
     const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 
     if (!allowedTypes.includes(file.type)) {
-      return NextResponse.json(
-        { error: "Type de fichier non autorisé" },
-        { status: 400 },
-      );
+      throw new Error("Type de fichier non autorisé");
     }
 
     // Validation de la taille (2MB max)
     if (file.size > 2 * 1024 * 1024) {
-      return NextResponse.json(
-        { error: "Fichier trop volumineux (max 2MB)" },
-        { status: 400 },
-      );
+      throw new Error("Fichier trop volumineux (max 2MB)");
     }
 
     const bytes = await file.arrayBuffer();
@@ -77,26 +70,28 @@ export async function POST(request: NextRequest) {
       .set({ image: avatarUrl })
       .where(eq(user.id, session.user.id));
 
-    return NextResponse.json({
+    // Revalider la page
+    revalidatePath("/profile");
+
+    return {
       success: true,
       avatarUrl,
-    });
-  } catch {
-    return NextResponse.json(
-      { error: "Erreur lors de l'upload" },
-      { status: 500 },
+    };
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Erreur lors de l'upload",
     );
   }
 }
 
-export async function DELETE(request: NextRequest) {
+export async function removeAvatar() {
   try {
     const session = await auth.api.getSession({
-      headers: request.headers,
+      headers: await headers(),
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+      throw new Error("Non autorisé");
     }
 
     // Générer l'URL Dicebear avec prénom + nom
@@ -110,14 +105,16 @@ export async function DELETE(request: NextRequest) {
       .set({ image: avatarUrl })
       .where(eq(user.id, session.user.id));
 
-    return NextResponse.json({
+    // Revalider la page
+    revalidatePath("/profile");
+
+    return {
       success: true,
       avatarUrl,
-    });
-  } catch {
-    return NextResponse.json(
-      { error: "Erreur lors de la suppression" },
-      { status: 500 },
+    };
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Erreur lors de la suppression",
     );
   }
 }

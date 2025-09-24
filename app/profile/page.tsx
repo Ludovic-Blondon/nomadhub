@@ -9,6 +9,8 @@ import { Avatar } from "@heroui/avatar";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+import { uploadAvatar, removeAvatar } from "./_components/avatar-actions";
+
 import { authClient } from "@/lib/auth-client";
 
 interface PersonalInfoForm {
@@ -118,16 +120,7 @@ export default function ProfilePage() {
 
       formData.append("avatar", file);
 
-      const response = await fetch("/api/upload/avatar", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Erreur lors de l'upload");
-      }
+      await uploadAvatar(formData);
 
       // Rafraîchir la session pour récupérer la nouvelle image
       await refetch();
@@ -147,15 +140,7 @@ export default function ProfilePage() {
   const handleRemoveAvatar = async () => {
     setIsRemovingAvatar(true);
     try {
-      const response = await fetch("/api/upload/avatar", {
-        method: "DELETE",
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Erreur lors de la suppression");
-      }
+      await removeAvatar();
 
       // Rafraîchir la session pour récupérer la nouvelle image
       await refetch();

@@ -30,6 +30,9 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
       case "add-room":
         router.push("/room/add");
         break;
+      case "profile":
+        router.push("/profile");
+        break;
       case "logout":
         authClient.signOut({
           fetchOptions: {
@@ -61,6 +64,7 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
       >
         <DropdownItem key="reservations">Mes réservations</DropdownItem>
         <DropdownItem key="add-room">Ajouter une chambre</DropdownItem>
+        <DropdownItem key="profile">Mon profil</DropdownItem>
         <DropdownItem key="logout" className="text-danger" color="danger">
           Déconnexion
         </DropdownItem>
