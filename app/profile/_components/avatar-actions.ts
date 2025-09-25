@@ -29,13 +29,13 @@ export async function uploadAvatar(formData: FormData) {
 
     // Validation du type de fichier
     const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    const maxFileSize = 2 * 1024 * 1024; // 2MB
 
     if (!allowedTypes.includes(file.type)) {
       throw new Error("Type de fichier non autorisé");
     }
 
-    // Validation de la taille (2MB max)
-    if (file.size > 2 * 1024 * 1024) {
+    if (file.size > maxFileSize) {
       throw new Error("Fichier trop volumineux (max 2MB)");
     }
 
@@ -96,7 +96,7 @@ export async function removeAvatar() {
 
     // Récupérer l'avatar actuel de l'utilisateur
     const currentUser = await db
-      .select()
+      .select({ image: user.image })
       .from(user)
       .where(eq(user.id, session.user.id))
       .limit(1);
@@ -120,8 +120,7 @@ export async function removeAvatar() {
 
     // Générer l'URL Dicebear avec prénom + nom
     const userName = session.user.name || "User";
-    const seed = encodeURIComponent(userName);
-    const avatarUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${seed}`;
+    const avatarUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(userName)}`;
 
     // Mettre à jour l'URL de l'avatar en base de données
     await db
