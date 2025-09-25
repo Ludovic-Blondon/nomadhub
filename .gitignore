@@ -45,3 +45,4 @@ bun.lockb
 
 # images (ignore only subfolder)
 /public/images/*/
+/public/uploads
