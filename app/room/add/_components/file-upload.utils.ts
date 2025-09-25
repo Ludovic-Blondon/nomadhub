@@ -1,6 +1,6 @@
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
 import { randomUUID } from "crypto";
+
+import { CloudinaryService } from "@/lib/cloudinary";
 
 export async function saveImageFile(
   file: File,
@@ -12,33 +12,23 @@ export async function saveImageFile(
   size: number;
   mimeType: string;
 }> {
+  // Convert file to base64
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
+  const base64Data = `data:${file.type};base64,${buffer.toString("base64")}`;
 
-  // Créer le nom de fichier unique
+  // Generate unique filename
   const fileExtension = file.name.split(".").pop()?.toLowerCase() || "jpg";
   const fileName = `${randomUUID()}.${fileExtension}`;
 
-  // Créer le chemin du dossier
-  const uploadDir = join(process.cwd(), "public", "uploads", "rooms", roomId);
-
-  try {
-    await mkdir(uploadDir, { recursive: true });
-  } catch {
-    // Le dossier existe déjà
-  }
-
-  // Chemin complet du fichier
-  const filePath = join(uploadDir, fileName);
-
-  // Sauvegarder le fichier
-  await writeFile(filePath, new Uint8Array(buffer));
-
-  // Retourner le chemin relatif depuis public
-  const relativePath = `/uploads/rooms/${roomId}/${fileName}`;
+  // Upload to Cloudinary
+  const result = await CloudinaryService.uploadBase64(base64Data, {
+    folder: `rooms/${roomId}`,
+    transformation: [{ quality: "auto", fetch_format: "auto" }],
+  });
 
   return {
-    path: relativePath,
+    path: result.secure_url,
     name: fileName,
     originalName: file.name,
     size: file.size,
