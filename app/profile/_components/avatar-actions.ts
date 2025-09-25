@@ -1,6 +1,6 @@
 "use server";
 
-import { writeFile, mkdir } from "fs/promises";
+import { writeFile, mkdir, unlink, access } from "fs/promises";
 import { join } from "path";
 
 import { headers } from "next/headers";
@@ -46,7 +46,7 @@ export async function uploadAvatar(formData: FormData) {
     const userDir = join(
       process.cwd(),
       "public",
-      "upload",
+      "uploads",
       "avatar",
       session.user.id,
     );
@@ -63,7 +63,7 @@ export async function uploadAvatar(formData: FormData) {
     await writeFile(filePath, new Uint8Array(buffer));
 
     // Mettre à jour l'URL de l'avatar en base de données
-    const avatarUrl = `/upload/avatar/${session.user.id}/${fileName}`;
+    const avatarUrl = `/uploads/avatar/${session.user.id}/${fileName}`;
 
     await db
       .update(user)
@@ -92,6 +92,30 @@ export async function removeAvatar() {
 
     if (!session?.user) {
       throw new Error("Non autorisé");
+    }
+
+    // Récupérer l'avatar actuel de l'utilisateur
+    const currentUser = await db
+      .select()
+      .from(user)
+      .where(eq(user.id, session.user.id))
+      .limit(1);
+
+    // Vérifier si l'avatar actuel est un fichier local (path) et non une URL
+    if (
+      currentUser[0]?.image &&
+      currentUser[0].image.startsWith("/uploads/avatar/")
+    ) {
+      const filePath = join(process.cwd(), "public", currentUser[0].image);
+
+      try {
+        // Vérifier si le fichier existe avant de le supprimer
+        await access(filePath);
+        await unlink(filePath);
+      } catch {
+        // Le fichier n'existe pas ou ne peut pas être supprimé
+        // On continue sans erreur car l'objectif est de nettoyer la DB
+      }
     }
 
     // Générer l'URL Dicebear avec prénom + nom
