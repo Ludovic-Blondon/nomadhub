@@ -82,8 +82,16 @@ export async function removeAvatar(publicId: string) {
     }
 
     // Delete from Cloudinary if it's a Cloudinary image
-    if (publicId && publicId.startsWith("avatar_")) {
-      await CloudinaryService.deleteFile(publicId);
+    if (
+      publicId &&
+      (publicId.startsWith("avatars/") || publicId.startsWith("avatar_"))
+    ) {
+      const deleteResult = await CloudinaryService.deleteFile(publicId);
+
+      // Return debug info temporarily
+      if (!deleteResult) {
+        return { error: `Échec suppression Cloudinary pour: ${publicId}` };
+      }
     }
 
     // Generate default avatar URL with user initials
