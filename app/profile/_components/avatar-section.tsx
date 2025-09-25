@@ -35,7 +35,11 @@ export function AvatarSection({ user }: AvatarSectionProps) {
 
       formData.append("avatar", file);
 
-      await uploadAvatar(formData);
+      const result = await uploadAvatar(formData);
+
+      if (result.error) {
+        throw new Error(result.error);
+      }
 
       // Rafraîchir la session pour récupérer la nouvelle image
       await refetch();
@@ -53,9 +57,39 @@ export function AvatarSection({ user }: AvatarSectionProps) {
   };
 
   const handleRemoveAvatar = async () => {
+    if (!user.image) {
+      toast.error("Aucun avatar à supprimer");
+
+      return;
+    }
+
+    // Extract public_id from Cloudinary URL
+    let publicId = "";
+
+    if (user.image.includes("cloudinary")) {
+      // Extract from URL like: https://res.cloudinary.com/cloud/image/upload/v123/avatars/avatar_user123.jpg
+      const urlParts = user.image.split("/");
+      const uploadIndex = urlParts.findIndex((part) => part === "upload");
+
+      if (uploadIndex !== -1 && uploadIndex + 2 < urlParts.length) {
+        // Skip version (v123) and get the rest as public_id
+        const pathParts = urlParts.slice(uploadIndex + 2);
+        const lastPart = pathParts[pathParts.length - 1];
+
+        pathParts[pathParts.length - 1] = lastPart.split(".")[0]; // Remove extension
+        publicId = pathParts.join("/");
+      }
+    } else {
+      publicId = `avatar_${user.email || "user"}`;
+    }
+
     setIsRemovingAvatar(true);
     try {
-      await removeAvatar();
+      const result = await removeAvatar(publicId);
+
+      if (result.error) {
+        throw new Error(result.error);
+      }
 
       // Rafraîchir la session pour récupérer la nouvelle image
       await refetch();
