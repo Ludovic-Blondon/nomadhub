@@ -35,3 +35,12 @@ export type BookingStatus =
 
 export type Role = "guest" | "host";
 export type Scope = "active" | "past";
+
+// Generic action state for form submissions
+export type ActionState = {
+  ok: boolean;
+  message: string;
+  fieldErrors: Record<string, string>;
+  values?: Record<string, any>;
+  data?: any;
+};

@@ -22,6 +22,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { HeartFilledIcon, SearchIcon, Logo } from "@/components/icons";
+import { UserDropdown } from "@/components/user-dropdown";
 import { poppins } from "@/app/fonts";
 import { authClient } from "@/lib/auth-client";
 
@@ -128,20 +129,7 @@ export const Navbar = () => {
               Chargement...
             </Button>
           ) : session?.user ? (
-            <Button
-              as={Link}
-              onPress={() =>
-                authClient.signOut({
-                  fetchOptions: {
-                    onSuccess: () => {
-                      router.push("/");
-                    },
-                  },
-                })
-              }
-            >
-              Logout
-            </Button>
+            <UserDropdown user={session.user} />
           ) : (
             <Button as={Link} href="/sign-in">
               Connexion
@@ -180,18 +168,46 @@ export const Navbar = () => {
               </Link>
             </NavbarMenuItem>
           ) : session?.user ? (
-            <NavbarMenuItem>
-              <Link
-                color="danger"
-                size="lg"
-                onPress={() => {
-                  authClient.signOut();
-                  setIsMenuOpen(false);
-                }}
-              >
-                Déconnexion
-              </Link>
-            </NavbarMenuItem>
+            <>
+              <NavbarMenuItem>
+                <Link
+                  color="foreground"
+                  href="/booking"
+                  size="lg"
+                  onPress={() => setIsMenuOpen(false)}
+                >
+                  Mes réservations
+                </Link>
+              </NavbarMenuItem>
+              <NavbarMenuItem>
+                <Link
+                  color="foreground"
+                  href="/room/add"
+                  size="lg"
+                  onPress={() => setIsMenuOpen(false)}
+                >
+                  Ajouter une chambre
+                </Link>
+              </NavbarMenuItem>
+              <NavbarMenuItem>
+                <Link
+                  color="danger"
+                  size="lg"
+                  onPress={() => {
+                    authClient.signOut({
+                      fetchOptions: {
+                        onSuccess: () => {
+                          router.push("/");
+                        },
+                      },
+                    });
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  Déconnexion
+                </Link>
+              </NavbarMenuItem>
+            </>
           ) : (
             <NavbarMenuItem>
               <Link

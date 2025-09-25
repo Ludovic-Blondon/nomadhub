@@ -10,10 +10,6 @@ export const siteConfig = {
       href: "/",
     },
     {
-      label: "Réservations",
-      href: "/booking",
-    },
-    {
       label: "Informations",
       href: "/info",
     },
@@ -26,10 +22,6 @@ export const siteConfig = {
     {
       label: "Accueil",
       href: "/",
-    },
-    {
-      label: "Réservations",
-      href: "/booking",
     },
     {
       label: "Informations",
