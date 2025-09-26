@@ -1,10 +1,13 @@
 "use client";
 
 import { AlertCircle, CheckCircle } from "lucide-react";
-import { useActionState, useTransition, useEffect } from "react";
+import { useActionState, useTransition, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { handleUpdateRoom } from "../_actions/update-room.action";
+
+import { ImageManager } from "./image-manager";
+import { ImageUpdateData } from "./image-types";
 
 import { RoomWithRelations, ActionState } from "@/types";
 import { cn } from "@/lib/utils";
@@ -33,6 +36,8 @@ interface EditRoomFormProps extends React.ComponentProps<"div"> {
 
 export function EditRoomForm({ room, className, ...props }: EditRoomFormProps) {
   const router = useRouter();
+  const [imageUpdateData, setImageUpdateData] =
+    useState<ImageUpdateData | null>(null);
   const [state, formAction, pending] = useActionState(
     handleUpdateRoom.bind(null, room.id),
     initialState,
@@ -49,6 +54,16 @@ export function EditRoomForm({ room, className, ...props }: EditRoomFormProps) {
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+
+    // Ajouter les données d'images si présentes
+    if (imageUpdateData) {
+      formData.append("imageUpdateData", JSON.stringify(imageUpdateData));
+
+      // Ajouter les fichiers d'images
+      imageUpdateData.imagesToUpload.forEach((file, index) => {
+        formData.append(`newImage-${index}`, file);
+      });
+    }
 
     startTransition(() => {
       formAction(formData);
@@ -183,6 +198,27 @@ export function EditRoomForm({ room, className, ...props }: EditRoomFormProps) {
                     {state.fieldErrors.neighborhood}
                   </p>
                 )}
+              </div>
+
+              {/* Section Images */}
+              <div className="grid gap-6 border-t pt-6">
+                <div>
+                  <h3 className="text-lg font-medium mb-4">
+                    Images de l'annonce
+                  </h3>
+
+                  <ImageManager
+                    disabled={isSubmitting}
+                    room={room}
+                    onImageDataChange={setImageUpdateData}
+                  />
+
+                  {state?.fieldErrors?.images && (
+                    <p className="text-sm text-destructive mt-2">
+                      {state.fieldErrors.images}
+                    </p>
+                  )}
+                </div>
               </div>
 
               <div className="flex flex-col gap-3">
