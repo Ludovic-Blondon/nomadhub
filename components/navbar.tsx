@@ -182,7 +182,17 @@ export const Navbar = () => {
               <NavbarMenuItem>
                 <Link
                   color="foreground"
-                  href="/room/add"
+                  href="/my-listings"
+                  size="lg"
+                  onPress={() => setIsMenuOpen(false)}
+                >
+                  Mes annonces
+                </Link>
+              </NavbarMenuItem>
+              <NavbarMenuItem>
+                <Link
+                  color="foreground"
+                  href="/my-listings/create"
                   size="lg"
                   onPress={() => setIsMenuOpen(false)}
                 >

@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { AddRoomForm } from "./_components/add-room-form";
+import { RoomForm } from "../_components/room-form";
 
 import { auth } from "@/lib/auth";
 
@@ -23,7 +23,7 @@ export default async function AddRoomPage() {
   return (
     <div className="flex w-full items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-2xl">
-        <AddRoomForm />
+        <RoomForm />
       </div>
     </div>
   );

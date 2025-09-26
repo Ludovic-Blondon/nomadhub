@@ -4,7 +4,8 @@ import { AlertCircle, CheckCircle } from "lucide-react";
 import { useActionState, useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-import { handleAddRoomSubmit } from "./add-room-action";
+import { handleAddRoomSubmit } from "../_actions/create-room.action";
+
 import { ImageUpload } from "./image-upload";
 
 import { ActionState } from "@/types";
@@ -28,10 +29,7 @@ const initialState: ActionState = {
   fieldErrors: {},
 };
 
-export function AddRoomForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+export function RoomForm({ className, ...props }: React.ComponentProps<"div">) {
   const router = useRouter();
   const [images, setImages] = useState<File[]>([]);
   const [state, formAction, pending] = useActionState(
