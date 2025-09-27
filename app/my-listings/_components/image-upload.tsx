@@ -8,7 +8,7 @@ import {
   MAX_IMAGES_PER_ROOM,
   MAX_FILE_SIZE,
   ALLOWED_IMAGE_TYPES,
-} from "./upload.constants";
+} from "../_utils/upload.constants";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";

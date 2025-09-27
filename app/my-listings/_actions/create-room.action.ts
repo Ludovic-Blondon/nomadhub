@@ -3,9 +3,9 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 
-import { createRoomSchema } from "./room.validation";
-import { saveImageFile } from "./file-upload.utils";
-import { MAX_IMAGES_PER_ROOM } from "./upload.constants";
+import { createRoomSchema } from "../_validations/room.validation";
+import { saveImageFile } from "../_utils/file-upload.utils";
+import { MAX_IMAGES_PER_ROOM } from "../_utils/upload.constants";
 
 import { ActionState } from "@/types";
 import { auth } from "@/lib/auth";

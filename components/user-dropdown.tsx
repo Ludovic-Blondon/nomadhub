@@ -28,7 +28,10 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
         router.push("/booking");
         break;
       case "add-room":
-        router.push("/room/add");
+        router.push("/my-listings/create");
+        break;
+      case "my-listings":
+        router.push("/my-listings");
         break;
       case "profile":
         router.push("/profile");
@@ -63,6 +66,7 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
         onAction={(key) => handleAction(String(key))}
       >
         <DropdownItem key="reservations">Mes réservations</DropdownItem>
+        <DropdownItem key="my-listings">Mes annonces</DropdownItem>
         <DropdownItem key="add-room">Ajouter une chambre</DropdownItem>
         <DropdownItem key="profile">Mon profil</DropdownItem>
         <DropdownItem key="logout" className="text-danger" color="danger">
