@@ -163,7 +163,7 @@ export async function updateRoomImagesGranular(
   updateData: ImageUpdateData,
 ): Promise<GranularImageUpdateResult> {
   const errors: string[] = [];
-  let uploadedImages: Array<{ id: string; path: string; order: number }> = [];
+  const uploadedImages: Array<{ id: string; path: string; order: number }> = [];
   let deletedImages: string[] = [];
   let updatedOrder: Array<{ id: string; order: number }> = [];
 

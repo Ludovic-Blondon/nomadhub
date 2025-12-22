@@ -84,15 +84,5 @@ export async function handleSignInSubmit(
 }
 
 export async function googleSignIn() {
-  const result = await googleOAuth();
-
-  return {
-    ...result,
-    values: {
-      email:
-        result.ok && result.data && "user" in result.data && result.data.user
-          ? (result.data.user.email ?? "")
-          : "",
-    },
-  };
+  await googleOAuth();
 }
